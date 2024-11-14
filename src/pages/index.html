@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <link rel="icon" href="/src/assets/ico.png" type="image/x-icon">
+
+    <link rel="stylesheet" href="/src/styles/styles.css" />
+    <title>Visualizacion de zonas inundadas Tabasco</title>
+    <script src="/src/code/leaflet-side-by-side.js"></script>
+  </head>
+  <body>
+    <button class="btnSide" id="activateSide">ACTIVAR COMPRACION</button>
+<!-- 
+    <div class="dropdown">
+      <button>Selecciona una opción</button>
+      <div class="dropdown-content">
+        <a href="#">FECHA 1</a>
+        <a href="#">FECHA 2</a>
+        <a href="#">FECHA 3</a>
+        <a href="#">FECHA 4</a>
+      </div>
+    </div>
+ -->
+    <div class="legenda">
+      <div class="legenda-content">
+        <div class="legenda-drop">
+          <div class="box-color temporal"></div>
+          <span>Agua temporal</span>
+        </div>
+        <div class="legenda-drop">
+          <div class="box-color permanente"></div>
+          <span>Agua permanente</span>
+        </div>
+        <div class="legenda-drop">
+          <div class="box-color identificado"></div>
+          <span>No identificado</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="map"></div>
+
+    <script src="/src/code/script.js"></script>
+  </body>
+</html>
