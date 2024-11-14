@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
     <link
       rel="stylesheet"
@@ -16,15 +17,36 @@
       integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
       crossorigin=""
     ></script>
-    <link rel="icon" href="/src/assets/ico.png" type="image/x-icon">
+    <link rel="icon" href="/src/assets/ico.png" type="image/x-icon" />
 
     <link rel="stylesheet" href="/src/styles/styles.css" />
     <title>Visualizacion de zonas inundadas Tabasco</title>
     <script src="/src/code/leaflet-side-by-side.js"></script>
   </head>
   <body>
-    <button class="btnSide" id="activateSide">ACTIVAR COMPRACION</button>
-<!-- 
+    <button class="btnSide" id="activateSide"><i class='bx bx-vertical-center'></i></button>
+
+    <div class="selector-container">
+      <label class="selector-label" for="leftLayer">Capa Izquierda:</label>
+      <select id="leftLayer" class="layer-selector">
+        <option value="2018">2018</option>
+        <option value="2019">2019</option>
+        <option value="2020">2020</option>
+        <option value="2021">2021</option>
+      </select>
+    
+      <label class="selector-label" for="rightLayer">Capa Derecha:</label>
+      <select id="rightLayer" class="layer-selector">
+        <option value="2018">2018</option>
+        <option value="2019">2019</option>
+        <option value="2020">2020</option>
+        <option value="2021">2021</option>
+      </select>
+    </div>
+    
+    
+
+    <!-- 
     <div class="dropdown">
       <button>Selecciona una opción</button>
       <div class="dropdown-content">

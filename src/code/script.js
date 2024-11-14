@@ -1,69 +1,93 @@
-var map = L.map("map").setView([17.810782, -91.533937], 12);
+var map = L.map("map").setView([17.810782, -91.533937], 10);
 
+//--------------------------------------------------------CARGA LA CAPA INICIAL DEL MAPA----------------------------
 var osmLayer = L.tileLayer(
-  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "&copy; OpenStreetMap contributors"
-  }).addTo(map);
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  {
+    attribution: "&copy; OpenStreetMap contributors",
+  }
+).addTo(map);
 
-/* var satelliteLayer = L.tileLayer(
-  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-    attribution: "&copy; Esri &copy; OpenStreetMap contributors"
-  });
- */
-
-  var satelliteLayer = new L.tileLayer(
-    "https://storage.googleapis.com/global-surface-water/tiles2020/transitions/{z}/{x}/{y}.png", {
+var capasDatos = {
+  2018: L.tileLayer(
+    "https://storage.googleapis.com/global-surface-water/tiles2018/transitions/{z}/{x}/{y}.png",
+    {
       format: "image/png",
       maxZoom: 13,
-      errorTileUrl: "https://storage.googleapis.com/global-surface-water/downloads_ancillary/blank.png",
-      attribution: "2016 EC JRC/Google"
-    });
+      errorTileUrl:
+        "https://storage.googleapis.com/global-surface-water/downloads_ancillary/blank.png",
+      attribution: "2016 EC JRC/Google",
+    }
+  ),
+  2019: L.tileLayer(
+    "https://storage.googleapis.com/global-surface-water/tiles2019/transitions/{z}/{x}/{y}.png",
+    {
+      format: "image/png",
+      maxZoom: 13,
+      errorTileUrl:
+        "https://storage.googleapis.com/global-surface-water/downloads_ancillary/blank.png",
+      attribution: "2016 EC JRC/Google",
+    }
+  ),
+  2020: L.tileLayer(
+    "https://storage.googleapis.com/global-surface-water/tiles2020/transitions/{z}/{x}/{y}.png",
+    {
+      format: "image/png",
+      maxZoom: 13,
+      errorTileUrl:
+        "https://storage.googleapis.com/global-surface-water/downloads_ancillary/blank.png",
+      attribution: "2016 EC JRC/Google",
+    }
+  ),
+  2021: L.tileLayer(
+    "https://storage.googleapis.com/global-surface-water/tiles2021/transitions/{z}/{x}/{y}.png",
+    {
+      format: "image/png",
+      maxZoom: 13,
+      errorTileUrl:
+        "https://storage.googleapis.com/global-surface-water/downloads_ancillary/blank.png",
+      attribution: "2016 EC JRC/Google",
+    }
+  ),
+};
+//-----------------------------------LOGICA DE CARGA DE CAPAS DE INUNDACION----------------------------
 
-var transitions = new L.tileLayer(
-  "https://storage.googleapis.com/global-surface-water/tiles2021/transitions/{z}/{x}/{y}.png", {
-    format: "image/png",
-    maxZoom: 13,
-    errorTileUrl: "https://storage.googleapis.com/global-surface-water/downloads_ancillary/blank.png",
-    attribution: "2016 EC JRC/Google"
-  });
-
-/* var marker = L.marker([17.810782, -91.533937]).addTo(map);
-marker.bindPopup("<b>HOLA!</b><br>AQUI ESTOY YO.").openPopup();
- */
-/* var circle = L.circle([17.810782, -91.533937], {
-  color: "red",
-  fillColor: "#f03",
-  fillOpacity: 0.5,
-  radius: 500,
-}).addTo(map);
-circle.bindPopup("I am a circle.");
- */
-var popup = L.popup();
-function onMapClick(e) {
-  popup
-    .setLatLng(e.latlng)
-    .setContent("You clicked the map at " + e.latlng.toString())
-    .openOn(map);
-}
-map.on("click", onMapClick);
+var leftLayer, rightLayer; 
 
 var sideBySideControl = null;
 
 function activarSideBySide() {
-  osmLayer.addTo(map);
-  satelliteLayer.addTo(map);
-  transitions.addTo(map);
+  var leftYear = document.getElementById("leftLayer").value;
+  var rightYear = document.getElementById("rightLayer").value;
 
-  sideBySideControl = L.control.sideBySide(satelliteLayer, transitions).addTo(map);
+  leftLayer = capasDatos[leftYear];
+  rightLayer = capasDatos[rightYear];
 
   map.dragging.disable();
 
-  document.getElementById("activateSide").innerText = "Desactivar comparación";
+  for (var key in capasDatos) {
+    map.removeLayer(capasDatos[key]);
+  }
+
+  osmLayer.addTo(map);
+  leftLayer.addTo(map);
+  rightLayer.addTo(map);
+
+  if (sideBySideControl) {
+    map.removeControl(sideBySideControl);
+    sideBySideControl = null;
+  }
+
+  sideBySideControl = L.control.sideBySide(leftLayer, rightLayer).addTo(map);
+
+  document.getElementById("activateSide");
+
+  document.querySelector(".selector-container").style.display = "block";
 }
 
 function desactivarSideBySide() {
-  map.removeLayer(satelliteLayer);
-  map.removeLayer(transitions);
+  if (leftLayer) map.removeLayer(leftLayer);
+  if (rightLayer) map.removeLayer(rightLayer);
 
   map.dragging.enable();
 
@@ -72,7 +96,20 @@ function desactivarSideBySide() {
     sideBySideControl = null;
   }
 
-  document.getElementById("activateSide").innerText = "Activar comparación";
+  osmLayer.addTo(map);
+
+  document.getElementById("activateSide");
+
+  document.querySelector(".selector-container").style.display = "none";
+}
+
+function manejarCambio() {
+  var leftYear = document.getElementById("leftLayer").value;
+  var rightYear = document.getElementById("rightLayer").value;
+
+  if (leftYear && rightYear) {
+    activarSideBySide();
+  }
 }
 
 document.getElementById("activateSide").addEventListener("click", function () {
@@ -82,3 +119,8 @@ document.getElementById("activateSide").addEventListener("click", function () {
     desactivarSideBySide();
   }
 });
+
+document.getElementById("leftLayer").addEventListener("change", manejarCambio);
+document.getElementById("rightLayer").addEventListener("change", manejarCambio);
+
+osmLayer.addTo(map);
