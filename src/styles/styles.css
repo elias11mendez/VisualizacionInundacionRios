@@ -113,12 +113,12 @@
 .temporal {
   margin-right: 10px;
 
-  background-color: #218838;
+  background-color: #bbff00da;
 }
 .permanente {
   margin-right: 10px;
 
-  background-color: yellow;
+  background-color: rgb(27, 0, 180);
 }
 .identificado {
   margin-right: 10px;
