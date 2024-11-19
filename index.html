@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
 
     <link
       rel="stylesheet"
@@ -17,6 +20,8 @@
       integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
       crossorigin=""
     ></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <link rel="icon" href="/src/assets/ico.png" type="image/x-icon" />
 
     <link rel="stylesheet" href="/src/styles/styles.css" />
@@ -24,7 +29,12 @@
     <script src="/src/code/leaflet-side-by-side.js"></script>
   </head>
   <body>
-    <button class="btnSide" id="activateSide"><i class='bx bx-vertical-center'></i></button>
+    <button class="btnSide" id="activateSide">
+      <i class="bx bx-vertical-center"></i>
+    </button>
+    <button class="btnSideInfo">
+      <i class="bx bx-info-circle"></i>
+    </button>
 
     <div class="selector-container">
       <label class="selector-label" for="leftLayer">Capa Izquierda:</label>
@@ -34,7 +44,7 @@
         <option value="2020">2020</option>
         <option value="2021">2021</option>
       </select>
-    
+
       <label class="selector-label" for="rightLayer">Capa Derecha:</label>
       <select id="rightLayer" class="layer-selector">
         <option value="2018">2018</option>
@@ -43,8 +53,6 @@
         <option value="2021">2021</option>
       </select>
     </div>
-    
-    
 
     <!-- 
     <div class="dropdown">
@@ -57,7 +65,36 @@
       </div>
     </div>
  -->
-    <div class="legenda">
+
+    <div id="state-legend" class="legend">
+      <h4>Indicadores</h4>
+      <div><span style="background-color: #fff5eb"></span>No es agua</div>
+      <div><span style="background-color: #0000ff"></span>Permanente</div>
+      <div><span style="background-color: #22b14c"></span>Nuevo permanente</div>
+      <div>
+        <span style="background-color: #d1102d"></span>Permanente perdido
+      </div>
+      <div><span style="background-color: #99d9ea"></span>Estacional</div>
+      <div><span style="background-color: #b5e61d"></span>Nuevo estacional</div>
+      <div>
+        <span style="background-color: #e6a1aa"></span>Perdido estacional
+      </div>
+      <div>
+        <span style="background-color: #ff7f27"></span>Estacional a permanente
+      </div>
+      <div>
+        <span style="background-color: #ffc90e"></span>Permanente a estacional
+      </div>
+      <div>
+        <span style="background-color: #7f7f7f"></span>Permanente efímero
+      </div>
+      <div>
+        <span style="background-color: #c3c3c3"></span>Estacional efímero
+      </div>
+      <div><span style="background-color: #cccccc"></span>Sin datos</div>
+    </div>
+
+    <!-- <div class="legenda" id="legenda-mov">
       <div class="legenda-content">
         <div class="legenda-drop">
           <div class="box-color temporal"></div>
@@ -72,10 +109,22 @@
           <span>No identificado</span>
         </div>
       </div>
+    </div> -->
+
+    <!-- CUADRO DE HISTOGRAMA -->
+    <div class="histogramaArrow" id="histogramaArrow" onclick="toggleSidebar()">
+      <i class="bx bxs-chevron-left"></i>
     </div>
+    <div class="sidebar" id="sidebar">
+      <p>Histograma de inundaciones</p>
+
+      <canvas id="histogramaCanvas"></canvas>
+    </div>
+    <!-- CUADRO DE HISTOGRAMA -->
 
     <div id="map"></div>
 
     <script src="/src/code/script.js"></script>
+    <script src="/src/code/interacionStyles.js"></script>
   </body>
 </html>

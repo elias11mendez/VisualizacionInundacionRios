@@ -1,5 +1,16 @@
-var map = L.map("map").setView([17.810782, -91.533937], 12);
+var map = L.map("map").setView([17.810782, -91.533937], 10);
+L.control.scale({
+    position: 'bottomright', 
+    maxWidth: 200,         
+    metric: true,          
+    imperial: true,       
+    updateWhenIdle: false  
+}).addTo(map);
 
+
+
+
+//--------------------------------------------------------CARGA LA CAPA INICIAL DEL MAPA----------------------------
 var osmLayer = L.tileLayer(
   "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
   {
@@ -7,71 +18,99 @@ var osmLayer = L.tileLayer(
   }
 ).addTo(map);
 
-/* ---------------------------------PETECIONES DE DATOS DE INUNDACIONES----------------------------------------------------------------------------- */
-var datos2019 = new L.tileLayer(
-  "https://storage.googleapis.com/global-surface-water/tiles2019/transitions/{z}/{x}/{y}.png",
-  {
-    format: "image/png",
-    maxZoom: 13,
-    errorTileUrl:
-      "https://storage.googleapis.com/global-surface-water/downloads_ancillary/blank.png",
-    attribution: "2016 EC JRC/Google",
-  }
-);
+var cartoLightLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+}).addTo(map);
 
-var datos2020 = new L.tileLayer(
-  "https://storage.googleapis.com/global-surface-water/tiles2020/transitions/{z}/{x}/{y}.png",
-  {
-    format: "image/png",
-    maxZoom: 13,
-    errorTileUrl:
-      "https://storage.googleapis.com/global-surface-water/downloads_ancillary/blank.png",
-    attribution: "2016 EC JRC/Google",
-  }
-);
+var esriLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+  attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+}).addTo(map) 
 
-var datos2021 = new L.tileLayer(
-  "https://storage.googleapis.com/global-surface-water/tiles2021/transitions/{z}/{x}/{y}.png",
-  {
-    format: "image/png",
-    maxZoom: 13,
-    errorTileUrl:
-      "https://storage.googleapis.com/global-surface-water/downloads_ancillary/blank.png",
-    attribution: "2016 EC JRC/Google",
-  }
-);
-var datos2022 = new L.tileLayer(
-  "https://storage.googleapis.com/global-surface-water/tiles2022/transitions/{z}/{x}/{y}.png",
-  {
-    format: "image/png",
-    maxZoom: 13,
-    errorTileUrl:
-      "https://storage.googleapis.com/global-surface-water/downloads_ancillary/blank.png",
-    attribution: "2016 EC JRC/Google",
-  }
-);
+var cartoDarkLayer  = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+}).addTo(map); 
 
 
+var capasDatos = {
+  2018: L.tileLayer(
+    "https://storage.googleapis.com/global-surface-water/tiles2018/transitions/{z}/{x}/{y}.png",
+    {
+      format: "image/png",
+      maxZoom: 19,
+      errorTileUrl:
+        "https://storage.googleapis.com/global-surface-water/downloads_ancillary/blank.png",
+      attribution: "2016 EC JRC/Google",
+    }
+  ),
+  2019: L.tileLayer(
+    "https://storage.googleapis.com/global-surface-water/tiles2019/transitions/{z}/{x}/{y}.png",
+    {
+      format: "image/png",
+      maxZoom: 19,
+      errorTileUrl:
+        "https://storage.googleapis.com/global-surface-water/downloads_ancillary/blank.png",
+      attribution: "2016 EC JRC/Google",
+    }
+  ),
+  2020: L.tileLayer(
+    "https://storage.googleapis.com/global-surface-water/tiles2020/transitions/{z}/{x}/{y}.png",
+    {
+      format: "image/png",
+      maxZoom: 19,
+      errorTileUrl:
+        "https://storage.googleapis.com/global-surface-water/downloads_ancillary/blank.png",
+      attribution: "2016 EC JRC/Google",
+    }
+  ),
+  2021: L.tileLayer(
+    "https://storage.googleapis.com/global-surface-water/tiles2021/transitions/{z}/{x}/{y}.png",
+    {
+      format: "image/png",
+      maxZoom: 19,
+      errorTileUrl:
+        "https://storage.googleapis.com/global-surface-water/downloads_ancillary/blank.png",
+      attribution: "2016 EC JRC/Google",
+    }
+  ),
+};
+//-----------------------------------LOGICA DE CARGA DE CAPAS DE INUNDACION----------------------------
 
-/* ---------------------------------PETECIONES DE DATOS DE INUNDACIONES----------------------------------------------------------------------------- */
+var leftLayer, rightLayer; 
 
 var sideBySideControl = null;
 
 function activarSideBySide() {
-  osmLayer.addTo(map);
-  datos2020.addTo(map);
-  datos2021.addTo(map);
+  var leftYear = document.getElementById("leftLayer").value;
+  var rightYear = document.getElementById("rightLayer").value;
 
-  sideBySideControl = L.control.sideBySide(datos2020, datos2021).addTo(map);
+  leftLayer = capasDatos[leftYear];
+  rightLayer = capasDatos[rightYear];
 
   map.dragging.disable();
 
-  document.getElementById("activateSide").innerText = "Desactivar comparación";
+  for (var key in capasDatos) {
+    map.removeLayer(capasDatos[key]);
+  }
+
+  osmLayer.addTo(map);
+  leftLayer.addTo(map);
+  rightLayer.addTo(map);
+
+  if (sideBySideControl) {
+    map.removeControl(sideBySideControl);
+    sideBySideControl = null;
+  }
+
+  sideBySideControl = L.control.sideBySide(leftLayer, rightLayer).addTo(map);
+
+  document.getElementById("activateSide");
+
+  document.querySelector(".selector-container").style.display = "block";
 }
 
 function desactivarSideBySide() {
-  map.removeLayer(datos2020);
-  map.removeLayer(datos2021);
+  if (leftLayer) map.removeLayer(leftLayer);
+  if (rightLayer) map.removeLayer(rightLayer);
 
   map.dragging.enable();
 
@@ -80,7 +119,20 @@ function desactivarSideBySide() {
     sideBySideControl = null;
   }
 
-  document.getElementById("activateSide").innerText = "Activar comparación";
+  osmLayer.addTo(map);
+
+  document.getElementById("activateSide");
+
+  document.querySelector(".selector-container").style.display = "none";
+}
+
+function manejarCambio() {
+  var leftYear = document.getElementById("leftLayer").value;
+  var rightYear = document.getElementById("rightLayer").value;
+
+  if (leftYear && rightYear) {
+    activarSideBySide();
+  }
 }
 
 document.getElementById("activateSide").addEventListener("click", function () {
@@ -90,3 +142,17 @@ document.getElementById("activateSide").addEventListener("click", function () {
     desactivarSideBySide();
   }
 });
+
+document.getElementById("leftLayer").addEventListener("change", manejarCambio);
+document.getElementById("rightLayer").addEventListener("change", manejarCambio);
+
+
+var baseLayers = {
+  "OpenStreetMap": osmLayer,
+  "Carto Light": cartoLightLayer,
+  "ESRI World Imagery": esriLayer,
+  "Carto Dark": cartoDarkLayer
+};
+osmLayer.addTo(map);
+
+L.control.layers(baseLayers).addTo(map);
