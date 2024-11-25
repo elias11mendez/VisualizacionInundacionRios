@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaflet WMS</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+  <div id="map" style="height: 500px;"></div>
+  <script>
+    var map = L.map('map').setView([25.1552 ,87.8232], 14);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    var wmsLayer = L.tileLayer.wms('http://localhost:8080/geoserver/ne/wms', {
+      layers: 'ne:20200603_VH',  
+      format: 'image/png',        
+      transparent: true,          
+      srs: 'EPSG:3857',        
+      width: 768,              
+      height: 622            
+    }).addTo(map);
+console.log(wmsLayer);
+
+  </script>
+</body>
+</html>

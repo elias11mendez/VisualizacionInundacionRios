@@ -113,7 +113,7 @@ document.getElementById("activateSide").addEventListener("click", function () {
   }
 });
 
-function manejarCambio() {
+function onChange() {
   var leftYear = document.getElementById("leftLayer").value;
   var rightYear = document.getElementById("rightLayer").value;
 
@@ -122,8 +122,8 @@ function manejarCambio() {
   }
 }
 
-document.getElementById("leftLayer").addEventListener("change", manejarCambio);
-document.getElementById("rightLayer").addEventListener("change", manejarCambio);
+document.getElementById("leftLayer").addEventListener("change", onChange);
+document.getElementById("rightLayer").addEventListener("change", onChange);
 
 var baseLayers = {
   "Carto Dark": osmLayer,
