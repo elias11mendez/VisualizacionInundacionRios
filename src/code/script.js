@@ -73,7 +73,6 @@ function activarSideBySide() {
     map.removeLayer(capasDatos[key]);
   }
 
-  osmLayer.addTo(map);
   leftLayer.addTo(map);
   rightLayer.addTo(map);
 
@@ -99,7 +98,6 @@ function desactivarSideBySide() {
     sideBySideControl = null;
   }
 
-  osmLayer.addTo(map);
   document.getElementById("activateSide");
 
   document.querySelector(".selector-container").style.display = "none";

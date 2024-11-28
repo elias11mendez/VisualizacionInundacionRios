@@ -75,23 +75,22 @@
 /* ---------------------------Leyenda en la esquina---------------------------------- */
 
 .legend {
-  top: 250px;
+  top: 360px;
   left: 10px;
-  height: 300px;
-  width: 230px;
+  height: 120px;
+  width: 200px;
   right: 10px;
   border-radius: 10px;
-  bottom: 30px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   font-size: 16px;
   padding: 10px;
   z-index: 2;
   position: absolute;
-  color: #ffffff;
+  color: #000000;
+  background-color: #f0f0f0;
 }
-.legend h4 {
-  margin: 0 0 10px;
-  padding: 10px;
+.legend p {
+  font-weight: bold;
   text-align: center;
 }
 .legend div span {
@@ -100,7 +99,6 @@
   height: 10px;
   width: 10px;
   margin-right: 10px;
-  border: 1px solid black;
 }
 
 .selector-container {
@@ -114,6 +112,7 @@
 display: none;
   border: 2px solid #6b6a6a77;
   position: fixed;
+  font-size: 14px;
 
   align-items: center;
 
@@ -131,7 +130,7 @@ display: none;
 
 .histogramaArrow {
   position: fixed;
-  display: flex;
+  display: none;
   justify-items: center;
   align-items: center;
   cursor: pointer;
@@ -160,8 +159,16 @@ display: none;
   text-align: center;
   font-weight: bold;
 }
+.sidebar button{
+  border: none;
+  cursor: pointer;
+  
+}
 .sidebar.open {
   right: 0;
+}
+.sidebar.close {
+  right: -300;
 }
 .histogramaArrow.moved {
   right: 350px;
@@ -194,4 +201,33 @@ canvas {
   font-size: 14px;
   background-color: #f9f9f9;
   z-index: 4;
+}
+
+.modal {
+  position: fixed;
+  z-index: 1;
+  left: 50%; 
+  top: 50%;  
+  transform: translate(-50%, -50%); 
+  display: none;
+  background-color: rgba(0, 0, 0, 0.5); 
+  padding: 20px; 
+  border-radius: 10px; 
+  width: 100%; 
+  height:auto; 
+}
+
+.close{
+cursor: pointer;  
+}
+.modal-content {
+  background-color: white;
+  margin: 10% auto; 
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; 
+  max-width: 600px; 
+  text-align: center; 
+  border-radius: 8px; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
 }

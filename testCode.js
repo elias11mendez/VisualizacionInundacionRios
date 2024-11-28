@@ -1,7 +1,15 @@
 const map = L.map("map").setView([17.810782, -91.533937], 10);
 
 const baseWMSUrl = "http://localhost:8080/geoserver/ne/wms";
-
+L.control
+  .scale({
+    position: "bottomright",
+    maxWidth: 200,
+    metric: true,
+    imperial: true,
+    updateWhenIdle: false,
+  })
+  .addTo(map);
 // Capa base OSM
 const osmLayer = L.tileLayer(
   "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
@@ -9,7 +17,30 @@ const osmLayer = L.tileLayer(
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
   }
-).addTo(map); // Aseguramos que OSM siempre esté presente al inicio.
+).addTo(map);
+
+var openstreetmap = L.tileLayer(
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  {
+    attribution: "&copy; OpenStreetMap contributors",
+  }
+);
+
+var cartoLightLayer = L.tileLayer(
+  "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+  {
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  }
+);
+
+var esriLayer = L.tileLayer(
+  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+  {
+    attribution:
+      "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community",
+  }
+);
 
 let leftLayer = null;
 let rightLayer = null;
@@ -82,54 +113,41 @@ function activateSideBySide() {
     console.log(rightLayer, "capa derecha");
   }
 
-  // Desactivar el arrastre del mapa
   map.dragging.disable();
 
   // Verificar si ya existe un control 'sideBySide'
   if (sideBySideControl) {
-    map.removeControl(sideBySideControl); // Eliminar cualquier instancia previa
+    map.removeControl(sideBySideControl);
   }
 
   // Activar el control lado a lado
   sideBySideControl = L.control.sideBySide(leftLayer, rightLayer).addTo(map);
 
-  // Mostrar el contenedor con los selectores
   document.querySelector(".selector-container").style.display = "block";
 }
 
 // Función para desactivar la comparación lado a lado
 function deactivateSideBySide() {
-  // Eliminar las capas de comparación
   if (leftLayer) map.removeLayer(leftLayer);
   if (rightLayer) map.removeLayer(rightLayer);
 
-  // Reactivar el arrastre del mapa
   map.dragging.enable();
 
-  // Eliminar el control de comparación lado a lado
   if (sideBySideControl) {
     map.removeControl(sideBySideControl);
     sideBySideControl = null;
   }
 
-  // Volver a añadir la capa base OSM si no está visible
-  if (!map.hasLayer(osmLayer)) {
-    osmLayer.addTo(map);
-  }
-
-  // Ocultar el contenedor de los selectores
   document.querySelector(".selector-container").style.display = "none";
 }
 
 let selectYearLeft, selectYearRight;
-
 
 // Función para manejar los cambios en los selectores de la capa izquierda
 document
   .getElementById("leftYearSelector")
   .addEventListener("change", function () {
     const year = this.value;
-    
     const season = document.getElementById("leftSeasonSelector").value;
     if (year && season) updateLayer(year, season, "left");
   });
@@ -139,7 +157,7 @@ console.log(selectYearLeft);
 document
   .getElementById("leftSeasonSelector")
   .addEventListener("change", function () {
-    const season = this.value
+    const season = this.value;
     const year = document.getElementById("leftYearSelector").value;
     if (year && season) updateLayer(year, season, "left");
   });
@@ -167,24 +185,40 @@ if (leftLayer && rightLayer) {
   activateSideBySide();
 }
 
+function toggleSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  const histogramaArrow = document.getElementById("histogramaArrow");
+  console.log("haciendo clic");
+
+  histogramaArrow.classList.toggle("moved");
+
+  sidebar.classList.toggle("open");
+}
+
 // Botón para activar la comparación lado a lado
 document.getElementById("activateSide").addEventListener("click", function () {
   const selectorContainer = document.querySelector(".selector-container");
-
-  // Mostrar u ocultar el contenedor con los selectores
+  const histogramaArrow = document.querySelector(".histogramaArrow");
+  const sidebar = document.querySelector(".sidebar");
+  const modal = document.querySelector(".modal");
   if (
     selectorContainer.style.display === "none" ||
     selectorContainer.style.display === ""
   ) {
-    selectorContainer.style.display = "block";
+    selectorContainer.style.display = "flex";
+    histogramaArrow.style.display = "flex";
+    sidebar.style.display = "block";
+
     alert("CARGUE LAS CAPAS PARA INICIAR LA COMPARACION Y VER LAS GRAFICAS");
   } else {
     selectorContainer.style.display = "none";
+    histogramaArrow.style.display = "none";
+    sidebar.style.display = "none";
+    modal.style.display = 'none'
   }
 
   // Activar o desactivar el comparador
   if (sideBySideControl === null) {
-    // Verificar si ambas capas están configuradas antes de activar
     if (leftLayer && rightLayer) {
       activateSideBySide();
     }
@@ -193,10 +227,9 @@ document.getElementById("activateSide").addEventListener("click", function () {
   }
 });
 
-
 /* -------------------------------------------------Graficas--------------------------------- */
 
-let output = []; // Variable global para almacenar los datos procesados
+let output = [];
 
 // Función para procesar el archivo CSV
 function parseCSV(text) {
@@ -215,13 +248,13 @@ function mapDataToObjects(data) {
   ];
   return data
     .map((row, index) => {
-      if (index === 0) return null; // Ignoramos la primera línea (encabezado)
+      if (index === 0) return null;
       return row.reduce((acc, value, idx) => {
-        acc[columns[idx]] = value; // Asignamos valores a las claves correspondientes
+        acc[columns[idx]] = value;
         return acc;
       }, {});
     })
-    .filter((item) => item !== null); // Eliminamos el encabezado
+    .filter((item) => item !== null);
 }
 
 // Función para cargar el archivo
@@ -232,49 +265,48 @@ function loadFile(url) {
       const decoder = new TextDecoder("utf-8");
       const text = decoder.decode(buffer);
       const lines = parseCSV(text);
-      output = mapDataToObjects(lines); // Asignamos los datos a la variable global
-      
-      console.log("Datos cargados:", output); // Verificamos que los datos se hayan cargado
+      output = mapDataToObjects(lines);
 
-
+      console.log("Datos cargados:", output);
     })
     .catch((error) => {
       console.error("Error al cargar el archivo:", error);
     });
 }
 
-// Llamamos a la función para cargar el archivo
 loadFile("Agua_PermanteTemporal.csv");
 
 let chartInstanceLeft = null;
 let chartInstanceRight = null;
+let chartInstanceTemporal = null;
+let chartInstancePermanente = null;
 
-// Datos para la gráfica inicial
 let leftTemporalData = {
-  labels: [], // Aquí irán las temporadas
+  labels: [],
   datasets: [
     {
       label: "Agua temporal",
-      data: [], // Aquí irán los datos de "Area_km2"
-      backgroundColor: "cyan", // Esto da el color de relleno bajo la línea
-      borderColor: "cyan", // Esto da el color de la línea
-      borderWidth: 1, // Esto da el grosor de la línea
+      data: [],
+      backgroundColor: "cyan",
+      borderColor: "cyan",
+      borderWidth: 1,
       tension: 0.2,
     },
     {
       label: "Agua permanente",
-      data: [], // Los datos de "Area_km2" para Agua Permanente
-      backgroundColor: "blue", // Color de relleno para Agua Permanente
-      borderColor: "blue", // Color de línea para Agua Permanente
+      data: [],
+      backgroundColor: "blue",
+      borderColor: "blue",
       borderWidth: 1,
       tension: 0.2,
-    }
+    },
   ],
 };
 
 const leftTemporalConfig = {
   type: "line",
   data: leftTemporalData,
+
   options: {
     responsive: true,
     scales: {
@@ -283,9 +315,12 @@ const leftTemporalConfig = {
         title: { display: true, text: "km2 Afectados" },
       },
       x: {
-        title: { display: true, text: "Temporadas", color: "black", font: { weight: "bold" } }, ticks:{
-          autoSkip:true,
-        }
+        title: {
+          display: true,
+          text: "Temporadas",
+          color: "black",
+          font: { weight: "bold" },
+        },
       },
     },
   },
@@ -305,12 +340,12 @@ let rightTemporalData = {
     },
     {
       label: "Agua permanente",
-      data: [], // Los datos de "Area_km2" para Agua Permanente
-      backgroundColor: "blue", // Color de relleno para Agua Permanente
-      borderColor: "blue", // Color de línea para Agua Permanente
+      data: [],
+      backgroundColor: "blue",
+      borderColor: "blue",
       borderWidth: 1,
       tension: 0.2,
-    }
+    },
   ],
 };
 
@@ -322,7 +357,12 @@ const rightTemporalConfig = {
     scales: {
       y: { beginAtZero: true, title: { display: true, text: "km2 Afectados" } },
       x: {
-        title: { display: true, text: "Temporadas", color: "black", font: { weight: "bold" } },
+        title: {
+          display: true,
+          text: "Temporadas",
+          color: "black",
+          font: { weight: "bold" },
+        },
       },
     },
   },
@@ -330,86 +370,66 @@ const rightTemporalConfig = {
 
 // Función para actualizar las gráficas
 function updateChart(selectedYear, chartSide) {
-  // Filtrar los datos según el año seleccionado
-  const filteredData = output.filter(
-    (item) => item.Año === selectedYear
-  );
+  const filteredData = output.filter((item) => item.Año === selectedYear);
 
-  // Obtener las áreas afectadas para cada tipo de agua
-  const areasTemporal = filteredData.filter(item => item.Tipo_Agua === "Temporal").map((item) => parseFloat(item.Area_km2));
-  const areasPermanente = filteredData.filter(item => item.Tipo_Agua === "Permanente").map((item) => parseFloat(item.Area_km2));
+  const areasTemporal = filteredData
+    .filter((item) => item.Tipo_Agua === "Temporal")
+    .map((item) => parseFloat(item.Area_km2));
+  const areasPermanente = filteredData
+    .filter((item) => item.Tipo_Agua === "Permanente")
+    .map((item) => parseFloat(item.Area_km2));
 
-  // Definir manualmente las etiquetas para el eje X
-  const manualLabels = ['Primavera', 'Verano', 'Otoño', 'Invierno']; // Ejemplo de etiquetas manuales
+  const manualLabels = ["Primavera", "Verano", "Otoño", "Invierno"];
 
-  // Actualizamos los datos de la gráfica izquierda o derecha según el "chartSide"
   if (chartSide === "left") {
-    leftTemporalData.labels = manualLabels; // Usamos las etiquetas manuales para el eje X
-    leftTemporalData.datasets[0].data = areasTemporal; // Datos para "Agua Temporal"
-    leftTemporalData.datasets[1].data = areasPermanente; // Datos para "Agua Permanente"
+    leftTemporalData.labels = manualLabels;
+    leftTemporalData.datasets[0].data = areasTemporal;
+    leftTemporalData.datasets[1].data = areasPermanente;
 
-    leftTemporalConfig.options.scales.x.title.text = `Temporadas ${selectedYear}`;
+    leftTemporalConfig.options.scales.x.title.text = `Temporada ${selectedYear}`;
 
-    // Destruir y volver a crear el gráfico izquierdo
     if (chartInstanceLeft) {
       chartInstanceLeft.destroy();
     }
-    const ctxLeft = document.getElementById("histogramaLeftTemporal").getContext("2d");
-    chartInstanceLeft = new Chart(ctxLeft, leftTemporalConfig); // Crear la nueva gráfica
+    const ctxLeft = document
+      .getElementById("histogramaLeftTemporal")
+      .getContext("2d");
+    chartInstanceLeft = new Chart(ctxLeft, leftTemporalConfig);
   } else if (chartSide === "right") {
-    rightTemporalData.labels = manualLabels; // Usamos las etiquetas manuales para el gráfico derecho
-    rightTemporalData.datasets[0].data = areasTemporal; // Datos para "Agua Temporal"
-    rightTemporalData.datasets[1].data = areasPermanente; // Datos para "Agua Permanente"
+    rightTemporalData.labels = manualLabels;
+    rightTemporalData.datasets[0].data = areasTemporal;
+    rightTemporalData.datasets[1].data = areasPermanente;
 
-    rightTemporalConfig.options.scales.x.title.text = `Temporadas ${selectedYear}`;
+    rightTemporalConfig.options.scales.x.title.text = `Temporada ${selectedYear}`;
 
-    // Destruir y volver a crear el gráfico derecho
     if (chartInstanceRight) {
       chartInstanceRight.destroy();
     }
-    const ctxRight = document.getElementById("histogramaRightTemporal").getContext("2d");
-    chartInstanceRight = new Chart(ctxRight, rightTemporalConfig); // Crear la nueva gráfica
+    const ctxRight = document
+      .getElementById("histogramaRightTemporal")
+      .getContext("2d");
+    chartInstanceRight = new Chart(ctxRight, rightTemporalConfig);
   }
 }
 
 // Escuchar cambios en el selector de la izquierda
 document
-  .getElementById('leftYearSelector')
+  .getElementById("leftYearSelector")
   .addEventListener("change", (event) => {
-    const selectYearLeft = event.target.value; // Año seleccionado en el lado izquierdo
+    const selectYearLeft = event.target.value;
     if (output.length > 0) {
-      updateChart(selectYearLeft, "left"); // Actualizar la gráfica izquierda
+      updateChart(selectYearLeft, "left");
     }
   });
 
 // Escuchar cambios en el selector de la derecha
 document
-  .getElementById('rightYearSelector')
+  .getElementById("rightYearSelector")
   .addEventListener("change", (event) => {
-    const selectYearRight = event.target.value; // Año seleccionado en el lado derecho
+    const selectYearRight = event.target.value;
     if (output.length > 0) {
-      updateChart(selectYearRight, "right"); // Actualizar la gráfica derecha
+      updateChart(selectYearRight, "right");
     }
   });
 
-// Función para cargar el archivo CSV y procesar los datos
-function loadFile(url) {
-  fetch(url)
-    .then((response) => response.arrayBuffer())
-    .then((buffer) => {
-      const decoder = new TextDecoder("utf-8");
-      const text = decoder.decode(buffer);
-      const lines = parseCSV(text);
-      output = mapDataToObjects(lines); // Asignamos los datos a la variable global
-
-      // Inicializamos la gráfica con el primer año después de cargar los datos
-    
-    })
-    .catch((error) => {
-      console.error("Error al cargar el archivo:", error);
-    });
-}
-
-// Llamada para cargar el archivo CSV
-loadFile("Agua_PermanteTemporal.csv");
-
+// Datos para la tercera gráfica (2020 y 2021)

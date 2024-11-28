@@ -18,9 +18,10 @@
       rel="stylesheet"
     />
   </head>
+
   <body>
     <div id="map"></div>
-    <button class="btnSide" id="activateSide" >
+    <button class="btnSide" id="activateSide">
       <i class="bx bx-vertical-center"></i>
     </button>
     <!-- <div class="layerTemporadas">
@@ -79,7 +80,6 @@
       </select>
     </div>
 
-
     <!-- CUADRO DE HISTOGRAMA -->
     <div class="histogramaArrow" id="histogramaArrow" onclick="toggleSidebar()">
       <i class="bx bxs-chevron-left"></i>
@@ -87,13 +87,48 @@
     <div class="sidebar" id="sidebar">
       <p>Histograma de inundaciones</p>
 
-      <canvas id="histogramaLeftTemporal" width="800px" height="600px"></canvas>
+      <button id="openModalBtn">Ver histograma Anual...</button>
 
-      <canvas id="histogramaRightTemporal" width="800px" height="600px"></canvas>
+      <canvas
+        id="histogramaLeftTemporal"
+        width="800px"
+        height="600px"
+        class="chart"
+      ></canvas>
 
+      <canvas
+        id="histogramaRightTemporal"
+        width="800px"
+        height="600px"
+      ></canvas>
+    </div>
+
+    <div id="myModal" class="modal">
+      <div class="modal-content">
+        <span class="close"><i class='bx bx-x'></i></span>
+        <h2>Agua temporal anual</h2>
+        <canvas
+          id="histogramaThirdTemporal"
+          width="900px"
+          height="400px"
+        ></canvas>
+
+        <h2>Agua permanente anual</h2>
+        <canvas
+        id="histogramaThirdPermanente"
+        width="900px"
+        height="400px"
+      ></canvas>
+        <!-- <button onclick="updateThirdChart()">ver datos</button> -->
+      </div>
     </div>
     <!-- CUADRO DE HISTOGRAMA -->
-
+    <div id="state-legend" class="legend">
+      <p>Indicadores</p>
+      <div><span style="background-color: #000000"></span>Sin datos</div>
+      <div><span style="background-color: cyan"></span>Agua Temporal</div>
+      <div><span style="background-color: blue"></span>Agua Permanente</div>
+    </div>
 
     <script src="/testCode.js"></script>
     <script src="/src/code/interacionStyles.js"></script>
