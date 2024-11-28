@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Leaflet WMS Layer</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/src/code/leaflet-side-by-side.js"></script>
+    <link rel="stylesheet" href="/src/styles/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="map"></div>
+    <button class="btnSide" id="activateSide" >
+      <i class="bx bx-vertical-center"></i>
+    </button>
+    <!-- <div class="layerTemporadas">
+      <select id="yearSelector" class="layer-selector-temporada">
+        <option>Año</option>
+
+        <option value="2019">2019</option>
+        <option value="2020">2020</option>
+        <option value="2021">2021</option>
+      </select>
+
+      <select id="seasonSelector" class="layer-selector-temporada">
+        <option>Temporada</option>
+
+        <option value="primavera">Primavera</option>
+        <option value="verano">Verano</option>
+        <option value="otono">Otoño</option>
+        <option value="invierno">Invierno</option>
+      </select>
+    </div> -->
+    <div class="selector-container">
+      <!-- CAPA IZQUIERDA -->
+      <label class="selector-label" for="leftYearSelector"
+        >Capa Izquierda - Año:</label
+      >
+      <select id="leftYearSelector" class="layer-selector-temporada">
+        <option value="">Año</option>
+        <option value="2019">2019</option>
+        <option value="2020">2020</option>
+        <option value="2021">2021</option>
+      </select>
+      <select id="leftSeasonSelector" class="layer-selector-temporada">
+        <option value="">Temporada</option>
+        <option value="primavera">Primavera</option>
+        <option value="verano">Verano</option>
+        <option value="otono">Otoño</option>
+        <option value="invierno">Invierno</option>
+      </select>
+
+      <!-- CAPA DERECHA -->
+      <label class="selector-label" for="rightYearSelector"
+        >Capa Derecha - Año:</label
+      >
+      <select id="rightYearSelector" class="layer-selector-temporada">
+        <option value="">Año</option>
+        <option value="2019">2019</option>
+        <option value="2020">2020</option>
+        <option value="2021">2021</option>
+      </select>
+      <select id="rightSeasonSelector" class="layer-selector-temporada">
+        <option value="">Temporada</option>
+        <option value="primavera">Primavera</option>
+        <option value="verano">Verano</option>
+        <option value="otono">Otoño</option>
+        <option value="invierno">Invierno</option>
+      </select>
+    </div>
+
+
+    <!-- CUADRO DE HISTOGRAMA -->
+    <div class="histogramaArrow" id="histogramaArrow" onclick="toggleSidebar()">
+      <i class="bx bxs-chevron-left"></i>
+    </div>
+    <div class="sidebar" id="sidebar">
+      <p>Histograma de inundaciones</p>
+
+      <canvas id="histogramaLeftTemporal" width="800px" height="600px"></canvas>
+
+      <canvas id="histogramaRightTemporal" width="800px" height="600px"></canvas>
+
+    </div>
+    <!-- CUADRO DE HISTOGRAMA -->
+
+
+    <script src="/testCode.js"></script>
+    <script src="/src/code/interacionStyles.js"></script>
+  </body>
+</html>

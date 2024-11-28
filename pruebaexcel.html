@@ -1,67 +1,23 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <title>Leer CSV</title>
-</head>
-<body>
-  <div>
-    <table>
-      <thead>
-        <tr>
-          <th>Año</th>
-          <th>Temporada</th>
-          <th>Tipo agua</th>
-          <th>Area_km2{}</th>
-        </tr>
-      </thead>
-    </table>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.1/papaparse.min.js"></script>
-  <script>
-let output;
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/src/code/leaflet-side-by-side.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/src/styles/styles.css">
+  </head>
+  <body>
+    <div class="sidebar" id="sidebar">
+      <p>Histograma de inundaciones</p>
 
-function parseCSV(text) {
-  // Obtenemos las lineas del texto
-  let lines = text.replace(/\r/g, '').split('\n');
-  return lines.map(line => {
-    // Por cada linea obtenemos los valores
-    let values = line.split(',');
-    return values;
-  });
-}
+      <canvas id="histogramaCanvas" width="500px" height="700px"></canvas>
 
-function mapDataToObjects(data) {
-  // Definimos las columnas
-  const columns = ['Año', 'Temporada', 'Tipo_Agua', 'Area_km2', 'Número de cuerpos de agua'];
 
-  // Mapeamos los datos a un formato de objeto
-  return data.map((row, index) => {
-    if (index === 0) return null; // Ignoramos la primera línea que es el encabezado
-    return row.reduce((acc, value, idx) => {
-      acc[columns[idx]] = value; // Asignamos los valores a las claves correspondientes
-      return acc;
-    }, {});
-  }).filter(item => item !== null); // Filtramos los valores nulos (encabezado)
-}
+    </div>
 
-function loadFile(url) {
-  fetch(url)
-    .then(response => response.arrayBuffer()) // Obtenemos el archivo como buffer
-    .then(buffer => {
-      const decoder = new TextDecoder('utf-8'); // Decodificamos el buffer en UTF-8
-      const text = decoder.decode(buffer); // Convertimos el buffer a texto
-      let lines = parseCSV(text); // Procesamos el texto CSV
-      output = mapDataToObjects(lines); // Mapeamos los datos a objetos
-      console.log('Datos mapeados:', output); // Mostramos el resultado
-    })
-    .catch(error => {
-      console.error('Error al cargar el archivo:', error);
-    });
-}
-
-// Llama a la función pasando la ruta del archivo CSV
-loadFile('Agua_PermanteTemporal.csv');
-
-  </script>
-</body>
+    <script src="/histogramasydatos.js"></script>
+  </body>
 </html>
