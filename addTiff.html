@@ -44,40 +44,76 @@
     </div> -->
     <div class="selector-container">
       <!-- CAPA IZQUIERDA -->
-      <label class="selector-label" for="leftYearSelector"
-        >Capa Izquierda - Año:</label
-      >
-      <select id="leftYearSelector" class="layer-selector-temporada">
-        <option value="">Año</option>
-        <option value="2019">2019</option>
-        <option value="2020">2020</option>
-        <option value="2021">2021</option>
-      </select>
-      <select id="leftSeasonSelector" class="layer-selector-temporada">
-        <option value="">Temporada</option>
-        <option value="primavera">Primavera</option>
-        <option value="verano">Verano</option>
-        <option value="otono">Otoño</option>
-        <option value="invierno">Invierno</option>
-      </select>
+      <div class="layerControl"> 
+        <div class="checkbox-container">
+          <div>
+            <label for="">Agua Temporal</label>
+            <input type="checkbox" checked disabled />
+          </div>
+      <!-- CAPA IZQUIERDA Checkbox -->
 
-      <!-- CAPA DERECHA -->
-      <label class="selector-label" for="rightYearSelector"
-        >Capa Derecha - Año:</label
-      >
-      <select id="rightYearSelector" class="layer-selector-temporada">
-        <option value="">Año</option>
-        <option value="2019">2019</option>
-        <option value="2020">2020</option>
-        <option value="2021">2021</option>
-      </select>
-      <select id="rightSeasonSelector" class="layer-selector-temporada">
-        <option value="">Temporada</option>
-        <option value="primavera">Primavera</option>
-        <option value="verano">Verano</option>
-        <option value="otono">Otoño</option>
-        <option value="invierno">Invierno</option>
-      </select>
+          <div>
+            <label for="">Agua Permanente </label>
+            <input
+              type="checkbox"
+              id="leftPermanentCheckbox"
+              name="leftPermanentCheckbox"
+              value="leftPermanentCheckbox"
+            />
+          </div>
+        </div>
+<hr>
+        <div class="checkbox-container">
+          <div>
+            <label for="">Agua Temporal</label>
+            <input type="checkbox" checked disabled/>
+          </div>
+<!-- Capa derecha checkbox -->
+          <div>
+            <label for="">Agua Permanente </label>
+            <input
+              type="checkbox"
+              id="rightPermanentCheckbox"
+              name="rightPermanentCheckbox"
+              value="rightPermanentCheckbox"
+            />
+          </div>
+        </div>
+      </div>
+      <div>
+        <label class="selector-label" for="leftYearSelector"
+          >Capa Izquierda - Año:</label
+        >
+        <select id="leftYearSelector" class="layer-selector-temporada">
+          <option value="">Año</option>
+          <option value="2019">2019</option>
+          <option value="2020">2020</option>
+          <option value="2021">2021</option>
+        </select>
+        <select id="leftSeasonSelector" class="layer-selector-temporada">
+          <option value="">Temporada</option>
+          <option value="primavera">Primavera</option>
+          <option value="verano">Verano</option>
+          <option value="otono">Otoño</option>
+          <option value="invierno">Invierno</option>
+        </select>
+
+        <!-- CAPA DERECHA -->
+        <label class="selector-label" for="rightYearSelector">Capa Derecha - Año:</label>
+        <select id="rightYearSelector" class="layer-selector-temporada">
+          <option value="">Año</option>
+          <option value="2019">2019</option>
+          <option value="2020">2020</option>
+          <option value="2021">2021</option>
+        </select>
+        <select id="rightSeasonSelector" class="layer-selector-temporada">
+          <option value="">Temporada</option>
+          <option value="primavera">Primavera</option>
+          <option value="verano">Verano</option>
+          <option value="otono">Otoño</option>
+          <option value="invierno">Invierno</option>
+        </select>
+      </div>
     </div>
 
     <!-- CUADRO DE HISTOGRAMA -->
@@ -87,7 +123,7 @@
     <div class="sidebar" id="sidebar">
       <p>Histograma de inundaciones</p>
 
-      <button id="openModalBtn">Ver histograma Anual...</button>
+      <button style="display: flex; align-items: center;" id="openModalBtn">Ver histograma Anual<i class='bx bx-chevron-right'></i></button>
 
       <canvas
         id="histogramaLeftTemporal"
@@ -96,6 +132,10 @@
         class="chart"
       ></canvas>
 
+      <span class="loader" id="loader">Seleccione un año...</span>
+
+
+    
       <canvas
         id="histogramaRightTemporal"
         width="800px"
@@ -105,7 +145,7 @@
 
     <div id="myModal" class="modal">
       <div class="modal-content">
-        <span class="close"><i class='bx bx-x'></i></span>
+        <span class="close"><i class="bx bx-x"></i></span>
         <h2>Agua temporal anual</h2>
         <canvas
           id="histogramaThirdTemporal"
@@ -115,10 +155,10 @@
 
         <h2>Agua permanente anual</h2>
         <canvas
-        id="histogramaThirdPermanente"
-        width="900px"
-        height="400px"
-      ></canvas>
+          id="histogramaThirdPermanente"
+          width="900px"
+          height="400px"
+        ></canvas>
         <!-- <button onclick="updateThirdChart()">ver datos</button> -->
       </div>
     </div>

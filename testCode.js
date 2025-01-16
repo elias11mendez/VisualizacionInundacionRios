@@ -1,5 +1,4 @@
-const map = L.map("map").setView([17.810782, -91.533937], 10);
-
+const map = L.map("map").setView([17.710782, -91.286937], 11);
 const baseWMSUrl = "http://localhost:8080/geoserver/ne/wms";
 L.control
   .scale({
@@ -18,100 +17,164 @@ const osmLayer = L.tileLayer(
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
   }
 ).addTo(map);
+// JavaScript
+let leftLayers = { temporal: null, permanente: null };
+let rightLayers = { temporal: null, permanente: null };
 
-var openstreetmap = L.tileLayer(
-  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-  {
-    attribution: "&copy; OpenStreetMap contributors",
-  }
-);
+let leftLayerTemporal = null;
+let rightLayerTemporal = null;
+let leftLayerPermanente = null;
+let rightLayerPermanente = null;
 
-var cartoLightLayer = L.tileLayer(
-  "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-  {
-    attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-  }
-);
-
-var esriLayer = L.tileLayer(
-  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-  {
-    attribution:
-      "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community",
-  }
-);
-
-let leftLayer = null;
-let rightLayer = null;
 let sideBySideControl = null;
 
 // Función para obtener el nombre de la capa basado en el año y la temporada
 function getLayerName(year, season) {
-  const seasonNames = {
+  const seasonTemporal = {
     primavera: "PrimaveraT",
     verano: "VeranoT",
     otono: "OtonoT",
     invierno: "InviernoT",
   };
-  return `ne:Agua${seasonNames[season]}${year}_1`;
+  const seasonPermanente = {
+    primavera: "PrimaveraP",
+    verano: "VeranoP",
+    otono: "OtonoP",
+    invierno: "InviernoP",
+  };
+
+  return [
+    `ne:Agua${seasonTemporal[season]}${year}_1`,
+    `ne:Agua${seasonPermanente[season]}${year}_1`,
+  ];
 }
 
 // Función para actualizar la capa
-function updateLayer(year, season, side) {
-  const layerName = getLayerName(year, season);
+function updateLayer(year, season, side, isPermanente = true) {
+  const [temporalLayerName, permanenteLayerName] = getLayerName(year, season);
+
+  const targetLayers = side === "left" ? leftLayers : rightLayers;
+  const layerName = isPermanente ? permanenteLayerName : temporalLayerName;
 
   if (side === "left") {
-    if (leftLayer) {
-      map.removeLayer(leftLayer); // Eliminar la capa izquierda si ya existe
+    if (leftLayerTemporal) {
+      map.removeLayer(leftLayerTemporal); // Eliminar la capa temporal si ya existe
     }
-    leftLayer = L.tileLayer.wms(baseWMSUrl, {
-      layers: layerName,
-      format: "image/png",
-      transparent: true,
-      version: "1.1.0",
-      crs: L.CRS.EPSG3857,
-    });
-    leftLayer.addTo(map);
+    if (leftLayerPermanente) {
+      map.removeLayer(leftLayerPermanente); // Eliminar la capa permanente si ya existe
+    }
+
+    if (isPermanente) {
+      leftLayerPermanente = L.tileLayer.wms(baseWMSUrl, {
+        layers: layerName,
+        format: "image/png",
+        transparent: true,
+        version: "1.1.0",
+        crs: L.CRS.EPSG3857,
+      });
+      leftLayerPermanente.addTo(map);
+      console.log("capa izquierda permanente", leftLayerPermanente);
+    } else {
+      leftLayerTemporal = L.tileLayer.wms(baseWMSUrl, {
+        layers: layerName,
+        format: "image/png",
+        transparent: true,
+        version: "1.1.0",
+        crs: L.CRS.EPSG3857,
+      });
+      leftLayerTemporal.addTo(map);
+    }
   } else if (side === "right") {
-    if (rightLayer) {
-      map.removeLayer(rightLayer); // Eliminar la capa derecha si ya existe
+    if (rightLayerTemporal) {
+      map.removeLayer(rightLayerTemporal); // Eliminar la capa temporal si ya existe
     }
-    rightLayer = L.tileLayer.wms(baseWMSUrl, {
-      layers: layerName,
-      format: "image/png",
-      transparent: true,
-      version: "1.1.0",
-      crs: L.CRS.EPSG3857,
-    });
-    rightLayer.addTo(map);
+    if (rightLayerPermanente) {
+      map.removeLayer(rightLayerPermanente); // Eliminar la capa permanente si ya existe
+    }
+
+    if (isPermanente) {
+      rightLayerPermanente = L.tileLayer.wms(baseWMSUrl, {
+        layers: layerName,
+        format: "image/png",
+        transparent: true,
+        version: "1.1.0",
+        crs: L.CRS.EPSG3857,
+      });
+      rightLayerPermanente.addTo(map);
+      console.log(rightLayerPermanente);
+    } else {
+      rightLayerTemporal = L.tileLayer.wms(baseWMSUrl, {
+        layers: layerName,
+        format: "image/png",
+        transparent: true,
+        version: "1.1.0",
+        crs: L.CRS.EPSG3857,
+      });
+      rightLayerTemporal.addTo(map);
+    }
   }
 
   // Activar la comparación lado a lado si ambas capas están listas
-  if (leftLayer && rightLayer) {
+  if (leftLayerTemporal && rightLayerTemporal) {
     activateSideBySide();
   }
 }
 
 // Función para activar la comparación lado a lado
 function activateSideBySide() {
-  if (!leftLayer || !rightLayer) {
+  if (!leftLayerTemporal || !rightLayerTemporal) {
+    console.error(
+      "Ambas capas deben estar configuradas antes de activar el comparador."
+    );
+    return;
+  }
+  if (!leftLayerPermanente || !rightLayerPermanente) {
     console.error(
       "Ambas capas deben estar configuradas antes de activar el comparador."
     );
     return;
   }
 
-  // Añadir las capas a sus respectivos lados
-  leftLayer.addTo(map);
-  rightLayer.addTo(map);
+  if (leftLayerTemporal) {
+    console.log("datos aqui datos aqui");
+    map.on("click", (e) => {
+      const { lat, lng } = e.latlng; // Obtener coordenadas del clic
 
-  if (leftLayer) {
-    console.log(leftLayer.options.layers, "capa izquierda");
+      // Crear un tooltip con información personalizada
+      const tooltip = L.tooltip()
+        .setLatLng([lat, lng]) // Establecer posición del tooltip
+        .setContent(
+          `
+          <div class="popup-content">
+            <div class="title">Cuerpos de agua en comparación</div>
+            <div class="section">
+              <div class="section-title">Lado Izquierdo:</div>
+              <div class="section-value">${
+                cuerpoAguaIzquierda ? cuerpoAguaIzquierda : "No disponible"
+              }</div>
+            </div>
+            <div class="section">
+              <div class="section-title">Lado Derecho:</div>
+              <div class="section-value">${
+                cuerpoAguaDerecha ? cuerpoAguaDerecha : "No disponible"
+              }</div>
+            </div>
+          </div>
+        `
+        )
+        .addTo(map); // Añadir tooltip al mapa
+
+      // Opcional: Eliminar el tooltip después de un tiempo
+      setTimeout(() => {
+        map.removeLayer(tooltip);
+      }, 3000);
+    });
+  } else {
+    return false;
   }
-  if (rightLayer) {
-    console.log(rightLayer, "capa derecha");
-  }
+
+  console.log(cuerpoAguaDerecha);
+  console.log(cuerpoAguaIzquierda);
 
   map.dragging.disable();
 
@@ -121,15 +184,21 @@ function activateSideBySide() {
   }
 
   // Activar el control lado a lado
-  sideBySideControl = L.control.sideBySide(leftLayer, rightLayer).addTo(map);
 
-  document.querySelector(".selector-container").style.display = "block";
+  sideBySideControl = L.control
+    .sideBySide(
+      [leftLayerPermanente, leftLayerTemporal],
+      [rightLayerPermanente, rightLayerTemporal]
+    )
+    .addTo(map);
+
+  document.querySelector(".selector-container").style.display = "flex";
 }
 
 // Función para desactivar la comparación lado a lado
 function deactivateSideBySide() {
-  if (leftLayer) map.removeLayer(leftLayer);
-  if (rightLayer) map.removeLayer(rightLayer);
+  if (leftLayerTemporal) map.removeLayer(leftLayerTemporal);
+  if (rightLayerTemporal) map.removeLayer(rightLayerTemporal);
 
   map.dragging.enable();
 
@@ -141,23 +210,24 @@ function deactivateSideBySide() {
   document.querySelector(".selector-container").style.display = "none";
 }
 
-let selectYearLeft, selectYearRight;
-
 // Función para manejar los cambios en los selectores de la capa izquierda
 document
   .getElementById("leftYearSelector")
   .addEventListener("change", function () {
     const year = this.value;
+
     const season = document.getElementById("leftSeasonSelector").value;
     if (year && season) updateLayer(year, season, "left");
+    if (season === season) {
+      document.getElementById("loader").style.display = "none";
+    }
   });
-
-console.log(selectYearLeft);
 
 document
   .getElementById("leftSeasonSelector")
   .addEventListener("change", function () {
     const season = this.value;
+
     const year = document.getElementById("leftYearSelector").value;
     if (year && season) updateLayer(year, season, "left");
   });
@@ -167,9 +237,13 @@ document
   .getElementById("rightYearSelector")
   .addEventListener("change", function () {
     const year = this.value;
-    selectYearRight = year;
+
     const season = document.getElementById("rightSeasonSelector").value;
     if (year && season) updateLayer(year, season, "right");
+
+    if (season === season) {
+      document.getElementById("loader").style.display = "none";
+    }
   });
 
 document
@@ -180,256 +254,68 @@ document
     if (year && season) updateLayer(year, season, "right");
   });
 
-// Activar la comparación lado a lado si las capas ya están configuradas
-if (leftLayer && rightLayer) {
-  activateSideBySide();
-}
+document.addEventListener("DOMContentLoaded", function () {
+  // Seleccionar los checkboxes
+  const leftPermanentCheckbox = document.getElementById(
+    "leftPermanentCheckbox"
+  );
+  const rightPermanentCheckbox = document.getElementById(
+    "rightPermanentCheckbox"
+  );
 
-function toggleSidebar() {
-  const sidebar = document.getElementById("sidebar");
-  const histogramaArrow = document.getElementById("histogramaArrow");
-  console.log("haciendo clic");
+  // Selectores para el año y la temporada
+  const leftYearSelector = document.getElementById("leftYearSelector");
+  const leftSeasonSelector = document.getElementById("leftSeasonSelector");
+  const rightYearSelector = document.getElementById("rightYearSelector");
+  const rightSeasonSelector = document.getElementById("rightSeasonSelector");
 
-  histogramaArrow.classList.toggle("moved");
+  // Función para actualizar las capas basadas en el checkbox y selectores
+  function updateLayersWithCheckbox(side) {
+    const year =
+      side === "left" ? leftYearSelector.value : rightYearSelector.value;
+    const season =
+      side === "left" ? leftSeasonSelector.value : rightSeasonSelector.value;
+    const isPermanentChecked =
+      side === "left"
+        ? leftPermanentCheckbox.checked
+        : rightPermanentCheckbox.checked;
 
-  sidebar.classList.toggle("open");
-}
-
-// Botón para activar la comparación lado a lado
-document.getElementById("activateSide").addEventListener("click", function () {
-  const selectorContainer = document.querySelector(".selector-container");
-  const histogramaArrow = document.querySelector(".histogramaArrow");
-  const sidebar = document.querySelector(".sidebar");
-  const modal = document.querySelector(".modal");
-  if (
-    selectorContainer.style.display === "none" ||
-    selectorContainer.style.display === ""
-  ) {
-    selectorContainer.style.display = "flex";
-    histogramaArrow.style.display = "flex";
-    sidebar.style.display = "block";
-
-    alert("CARGUE LAS CAPAS PARA INICIAR LA COMPARACION Y VER LAS GRAFICAS");
-  } else {
-    selectorContainer.style.display = "none";
-    histogramaArrow.style.display = "none";
-    sidebar.style.display = "none";
-    modal.style.display = 'none'
+    if (year && season) {
+      updateLayer(year, season, side, isPermanentChecked);
+    }
   }
 
-  // Activar o desactivar el comparador
-  if (sideBySideControl === null) {
-    if (leftLayer && rightLayer) {
-      activateSideBySide();
-    }
-  } else {
-    deactivateSideBySide();
+  // Listeners para los checkboxes
+  if (leftPermanentCheckbox) {
+    leftPermanentCheckbox.addEventListener("change", function () {
+      updateLayersWithCheckbox("left");
+    });
+  }
+
+  if (rightPermanentCheckbox) {
+    rightPermanentCheckbox.addEventListener("change", function () {
+      updateLayersWithCheckbox("right");
+    });
+  }
+
+  // Listeners para los selectores de año y temporada
+  if (leftYearSelector && leftSeasonSelector) {
+    leftYearSelector.addEventListener("change", function () {
+      updateLayersWithCheckbox("left");
+    });
+
+    leftSeasonSelector.addEventListener("change", function () {
+      updateLayersWithCheckbox("left");
+    });
+  }
+
+  if (rightYearSelector && rightSeasonSelector) {
+    rightYearSelector.addEventListener("change", function () {
+      updateLayersWithCheckbox("right");
+    });
+
+    rightSeasonSelector.addEventListener("change", function () {
+      updateLayersWithCheckbox("right");
+    });
   }
 });
-
-/* -------------------------------------------------Graficas--------------------------------- */
-
-let output = [];
-
-// Función para procesar el archivo CSV
-function parseCSV(text) {
-  let lines = text.replace(/\r/g, "").split("\n");
-  return lines.map((line) => line.split(","));
-}
-
-// Mapea los datos del CSV a un objeto con las columnas correspondientes
-function mapDataToObjects(data) {
-  const columns = [
-    "Año",
-    "Temporada",
-    "Tipo_Agua",
-    "Area_km2",
-    "Número de cuerpos de agua",
-  ];
-  return data
-    .map((row, index) => {
-      if (index === 0) return null;
-      return row.reduce((acc, value, idx) => {
-        acc[columns[idx]] = value;
-        return acc;
-      }, {});
-    })
-    .filter((item) => item !== null);
-}
-
-// Función para cargar el archivo
-function loadFile(url) {
-  fetch(url)
-    .then((response) => response.arrayBuffer())
-    .then((buffer) => {
-      const decoder = new TextDecoder("utf-8");
-      const text = decoder.decode(buffer);
-      const lines = parseCSV(text);
-      output = mapDataToObjects(lines);
-
-      console.log("Datos cargados:", output);
-    })
-    .catch((error) => {
-      console.error("Error al cargar el archivo:", error);
-    });
-}
-
-loadFile("Agua_PermanteTemporal.csv");
-
-let chartInstanceLeft = null;
-let chartInstanceRight = null;
-let chartInstanceTemporal = null;
-let chartInstancePermanente = null;
-
-let leftTemporalData = {
-  labels: [],
-  datasets: [
-    {
-      label: "Agua temporal",
-      data: [],
-      backgroundColor: "cyan",
-      borderColor: "cyan",
-      borderWidth: 1,
-      tension: 0.2,
-    },
-    {
-      label: "Agua permanente",
-      data: [],
-      backgroundColor: "blue",
-      borderColor: "blue",
-      borderWidth: 1,
-      tension: 0.2,
-    },
-  ],
-};
-
-const leftTemporalConfig = {
-  type: "line",
-  data: leftTemporalData,
-
-  options: {
-    responsive: true,
-    scales: {
-      y: {
-        beginAtZero: true,
-        title: { display: true, text: "km2 Afectados" },
-      },
-      x: {
-        title: {
-          display: true,
-          text: "Temporadas",
-          color: "black",
-          font: { weight: "bold" },
-        },
-      },
-    },
-  },
-};
-
-// Datos para la gráfica derecha
-let rightTemporalData = {
-  labels: [],
-  datasets: [
-    {
-      label: "Agua temporal",
-      data: [],
-      backgroundColor: "cyan",
-      borderColor: "cyan",
-      borderWidth: 1,
-      tension: 0.2,
-    },
-    {
-      label: "Agua permanente",
-      data: [],
-      backgroundColor: "blue",
-      borderColor: "blue",
-      borderWidth: 1,
-      tension: 0.2,
-    },
-  ],
-};
-
-const rightTemporalConfig = {
-  type: "line",
-  data: rightTemporalData,
-  options: {
-    responsive: true,
-    scales: {
-      y: { beginAtZero: true, title: { display: true, text: "km2 Afectados" } },
-      x: {
-        title: {
-          display: true,
-          text: "Temporadas",
-          color: "black",
-          font: { weight: "bold" },
-        },
-      },
-    },
-  },
-};
-
-// Función para actualizar las gráficas
-function updateChart(selectedYear, chartSide) {
-  const filteredData = output.filter((item) => item.Año === selectedYear);
-
-  const areasTemporal = filteredData
-    .filter((item) => item.Tipo_Agua === "Temporal")
-    .map((item) => parseFloat(item.Area_km2));
-  const areasPermanente = filteredData
-    .filter((item) => item.Tipo_Agua === "Permanente")
-    .map((item) => parseFloat(item.Area_km2));
-
-  const manualLabels = ["Primavera", "Verano", "Otoño", "Invierno"];
-
-  if (chartSide === "left") {
-    leftTemporalData.labels = manualLabels;
-    leftTemporalData.datasets[0].data = areasTemporal;
-    leftTemporalData.datasets[1].data = areasPermanente;
-
-    leftTemporalConfig.options.scales.x.title.text = `Temporada ${selectedYear}`;
-
-    if (chartInstanceLeft) {
-      chartInstanceLeft.destroy();
-    }
-    const ctxLeft = document
-      .getElementById("histogramaLeftTemporal")
-      .getContext("2d");
-    chartInstanceLeft = new Chart(ctxLeft, leftTemporalConfig);
-  } else if (chartSide === "right") {
-    rightTemporalData.labels = manualLabels;
-    rightTemporalData.datasets[0].data = areasTemporal;
-    rightTemporalData.datasets[1].data = areasPermanente;
-
-    rightTemporalConfig.options.scales.x.title.text = `Temporada ${selectedYear}`;
-
-    if (chartInstanceRight) {
-      chartInstanceRight.destroy();
-    }
-    const ctxRight = document
-      .getElementById("histogramaRightTemporal")
-      .getContext("2d");
-    chartInstanceRight = new Chart(ctxRight, rightTemporalConfig);
-  }
-}
-
-// Escuchar cambios en el selector de la izquierda
-document
-  .getElementById("leftYearSelector")
-  .addEventListener("change", (event) => {
-    const selectYearLeft = event.target.value;
-    if (output.length > 0) {
-      updateChart(selectYearLeft, "left");
-    }
-  });
-
-// Escuchar cambios en el selector de la derecha
-document
-  .getElementById("rightYearSelector")
-  .addEventListener("change", (event) => {
-    const selectYearRight = event.target.value;
-    if (output.length > 0) {
-      updateChart(selectYearRight, "right");
-    }
-  });
-
-// Datos para la tercera gráfica (2020 y 2021)

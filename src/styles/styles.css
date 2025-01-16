@@ -87,7 +87,7 @@
   z-index: 2;
   position: absolute;
   color: #000000;
-  background-color: #f0f0f0;
+  background-color: rgba(209, 209, 209, 0.5);
 }
 .legend p {
   font-weight: bold;
@@ -109,7 +109,8 @@
   padding: 10px;
   border-radius: 5px;
   transition: right 0.3s ease;
-display: none;
+  display: flex;
+  flex-direction: column;
   border: 2px solid #6b6a6a77;
   position: fixed;
   font-size: 14px;
@@ -130,7 +131,6 @@ display: none;
 
 .histogramaArrow {
   position: fixed;
-  display: none;
   justify-items: center;
   align-items: center;
   cursor: pointer;
@@ -159,10 +159,9 @@ display: none;
   text-align: center;
   font-weight: bold;
 }
-.sidebar button{
+.sidebar button {
   border: none;
   cursor: pointer;
-  
 }
 .sidebar.open {
   right: 0;
@@ -181,12 +180,12 @@ canvas {
 }
 /* --------------------------ESTILOS DE LA SEGUNDA PAGINA TEST------------------------------- */
 .layerTemporadas {
-  position: absolute; 
-  top: 0; 
-  left: 50%; 
-  transform: translateX(-50%); 
-  flex-direction: column; 
-  align-items: center; 
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  flex-direction: column;
+  align-items: center;
   margin-top: 10px;
   z-index: 4;
 }
@@ -203,31 +202,120 @@ canvas {
   z-index: 4;
 }
 
+.layerControl{
+  display: flex;
+  justify-content: space-between;
+}
+.layerControl hr{
+  background-color: #333;
+  width: 2px;
+  margin: 10px;
+}
+
 .modal {
   position: fixed;
   z-index: 1;
-  left: 50%; 
-  top: 50%;  
-  transform: translate(-50%, -50%); 
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   display: none;
-  background-color: rgba(0, 0, 0, 0.5); 
-  padding: 20px; 
-  border-radius: 10px; 
-  width: 100%; 
-  height:auto; 
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  border-radius: 10px;
+  width: 100%;
+  height: auto;
 }
 
-.close{
-cursor: pointer;  
+.close {
+  cursor: pointer;
 }
 .modal-content {
   background-color: white;
-  margin: 10% auto; 
+  margin: 10% auto;
   padding: 20px;
   border: 1px solid #888;
-  width: 80%; 
-  max-width: 600px; 
-  text-align: center; 
-  border-radius: 8px; 
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+  width: 80%;
+  max-width: 600px;
+  text-align: center;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.checkbox-container{
+  display: flex;
+}
+.checkbox-container input{
+  cursor: pointer;
+}
+.checkbox-container div{
+  display: flex;
+  margin: 10px;
+  justify-content: space-around;
+}
+
+
+
+.loader {
+  width: 180px;
+  height: 140px;
+  display: block;
+  margin: 0 auto 20px;
+  background-image: radial-gradient(circle 25px at 25px 25px, #2c68d6 100%, transparent 0), radial-gradient(circle 50px at 50px 50px, #2c68d6 100%, transparent 0), radial-gradient(circle 25px at 25px 25px, #2c68d6 100%, transparent 0), radial-gradient(circle 15px at 15px 15px, #2c68d6 100%, transparent 0), linear-gradient(#2c68d6 50px, transparent 0);
+  background-size: 50px 50px, 100px 75px, 50px 50px, 30px 32px, 136px 20px;
+  background-repeat: no-repeat;
+  background-position: 0px 30px, 30px 0px, 113px 29px, 147px 50px, 23px 60px;
+  position: relative;
+  box-sizing: border-box;
+}
+.loader::after {
+  content: '';  
+  position: absolute;
+  left: 2px;
+  top: 65px;
+  width: 2px;
+  height: 6px;
+  color: #0d1880;
+  box-sizing: border-box;
+  animation: animloader 0.6s linear infinite;
+}
+
+@keyframes animloader {
+  0% {
+    box-shadow: 25px 0 rgb(255, 255, 255), 50px 0 white, 75px 0 white, 100px 0 white, 125px 0 white, 150px 0 white, 25px 0 white, 50px 0 white, 75px 0 white, 100px 0 white, 125px 0 white, 150px 0 white;
+  }
+  50% {
+    box-shadow: 25px 20px white, 50px 60px rgba(255, 255, 255, 0), 75px 30px rgba(255, 255, 255, 0), 100px 70px rgba(255, 255, 255, 0), 125px 40px white, 150px 60px rgba(255, 255, 255, 0), 25px 20px white, 50px 30px white, 75px 10px white, 100px 30px white, 125px 30px rgba(255, 255, 255, 0), 150px 30px rgba(255, 255, 255, 0);
+  }
+  100% {
+    box-shadow: 25px 60px rgba(255, 255, 255, 0), 50px 60px rgba(255, 255, 255, 0), 75px 50px rgba(255, 255, 255, 0), 100px 70px rgba(255, 255, 255, 0), 125px 70px rgba(255, 255, 255, 0), 150px 60px rgba(255, 255, 255, 0), 25px 80px rgba(255, 255, 255, 0), 50px 80px rgba(255, 255, 255, 0), 75px 70px rgba(255, 255, 255, 0), 100px 60px rgba(255, 255, 255, 0), 125px 30px rgba(255, 255, 255, 0), 150px 30px rgba(255, 255, 255, 0);
+  }
+}
+
+
+
+/* -----------------------------------------------estilos de el toltip-------------------- */
+.popup-content {
+  font-size: 14px;
+  color: #333;
+}
+
+.popup-content .title {
+  font-size: 16px;
+  color: #2c3e50;
+  font-weight: bold;
+}
+
+.popup-content .section {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.popup-content .section .section-title {
+  font-weight: bold;
+  color: #16a085;
+  margin-left: 20px;
+}
+
+.popup-content .section .section-value {
+  margin-left: 20px;
 }
