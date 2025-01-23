@@ -370,44 +370,39 @@ const rightTemporalConfig = {
   },
 };
 // Función para obtener el cuerpo de agua para el lado izquierdo
-let cuerpoAguaIzquierda = null
+let cuerpoAguaIzquierda = null;
 function getCuerpoAguaIzquierda() {
   const yearToUse = selectedYearLeft;
   const seasonToUse = selectedSeasonLeft;
   // Filtrar los datos para el lado izquierdo
   const filteredCuerpoAgua = output.filter(
     (item) =>
-      item.Año === yearToUse &&
-      item.Temporada === seasonToUse &&
-      item.Tipo_Agua === "Temporal"
+      item.Año === yearToUse && item.Temporada === seasonToUse && item.Tipo_Agua
   );
   // Obtener el número de cuerpos de agua
-    cuerpoAguaIzquierda = filteredCuerpoAgua.map((item) =>
+  cuerpoAguaIzquierda = filteredCuerpoAgua.map((item) =>
     parseFloat(item.Numero_de_cuerpos_de_agua)
   );
   console.log(yearToUse, seasonToUse, cuerpoAguaIzquierda);
   return cuerpoAguaIzquierda; // Retorna el cuerpo de agua para el lado izquierdo
 }
 
-let cuerpoAguaDerecha = null
+let cuerpoAguaDerecha = null;
 function getCuerpoAguaDerecha() {
   const yearToUse = selectedYearRight;
   const seasonToUse = selectedSeasonRight;
   // Filtrar los datos para el lado derecho
   const filteredCuerpoAgua = output.filter(
-    (item) =>
-      item.Año === yearToUse &&
-      item.Temporada === seasonToUse &&
-      item.Tipo_Agua === "Temporal"
+    (item) => item.Año === yearToUse && item.Temporada === seasonToUse && item.Tipo_Agua
   );
   // Obtener el número de cuerpos de agua
-    cuerpoAguaDerecha = filteredCuerpoAgua.map((item) =>
+  cuerpoAguaDerecha = filteredCuerpoAgua.map((item) =>
     parseFloat(item.Numero_de_cuerpos_de_agua)
   );
-  console.log(yearToUse,seasonToUse, cuerpoAguaDerecha);
+  
+  console.log(yearToUse, seasonToUse, cuerpoAguaDerecha);
   return cuerpoAguaDerecha; // Retorna el cuerpo de agua para el lado derecho
 }
-
 
 function updateCuerposAgua() {
   const cuerpoAguaIzquierda = getCuerpoAguaIzquierda();
@@ -458,14 +453,12 @@ function updateChart(selectedYear, chartSide) {
   }
 }
 
-// Escuchar cambios en el selector de la izquierda
+// Lado izquierdo
 document
   .getElementById("leftYearSelector")
   .addEventListener("change", (event) => {
     selectedYearLeft = event.target.value;
-    if (output.length > 0) {
-      updateChart(selectedYearLeft, "left");
-    }
+    updateChart(selectedYearLeft, "left");
     updateCuerposAgua();
   });
 
@@ -473,30 +466,19 @@ document
   .getElementById("leftSeasonSelector")
   .addEventListener("change", (event) => {
     selectedSeasonLeft = event.target.value;
-
-    // Hacer que la primera letra sea mayúscula
     selectedSeasonLeft =
       selectedSeasonLeft.charAt(0).toUpperCase() + selectedSeasonLeft.slice(1);
 
-    console.log(
-      "Temporada seleccionada en la izquierda:",
-      selectedYearLeft,
-      selectedSeasonLeft
-    );
-
-    if (output.length > 0) {
-      updateChart(selectedSeasonLeft, "left");
-    }
-    updateCuerposAgua();
+    updateChart(selectedSeasonLeft, selectedYearLeft, "left"); 
+    updateCuerposAgua(); 
   });
 
+// Lado derecho
 document
   .getElementById("rightYearSelector")
   .addEventListener("change", (event) => {
     selectedYearRight = event.target.value;
-    if (output.length > 0) {
-      updateChart(selectedYearRight, "right");
-    }
+    updateChart(selectedYearRight, "right");
     updateCuerposAgua();
   });
 
@@ -504,23 +486,12 @@ document
   .getElementById("rightSeasonSelector")
   .addEventListener("change", (event) => {
     selectedSeasonRight = event.target.value;
-
-    // Hacer que la primera letra sea mayúscula
     selectedSeasonRight =
       selectedSeasonRight.charAt(0).toUpperCase() +
       selectedSeasonRight.slice(1);
 
-    console.log(
-      "Temporada seleccionada en la izquierda:",
-      selectedYearRight,
-      selectedSeasonRight
-    );
-
-    if (output.length > 0) {
-      updateChart(selectedSeasonRight, "right");
-      updateCuerposAgua();
-
-    }
+    updateChart(selectedSeasonRight, selectedYearRight, "right");
+    updateCuerposAgua();
   });
 
 function toggleSidebar() {
@@ -538,6 +509,13 @@ document.getElementById("activateSide").addEventListener("click", function () {
   const histogramaArrow = document.querySelector(".histogramaArrow");
   const sidebar = document.querySelector(".sidebar");
   const modal = document.querySelector(".modal");
+
+if (generalFloods) {
+  map.removeLayer(generalFloods)
+  generalFloods = null
+}
+
+
   if (
     selectorContainer.style.display === "none" ||
     selectorContainer.style.display === ""

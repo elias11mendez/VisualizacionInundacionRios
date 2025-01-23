@@ -8,7 +8,7 @@
   z-index: 1;
 }
 :root {
-  font-family: "Montserrat", serif;
+  font-family: "Montserrat";
 }
 .btnSide {
   position: fixed;
@@ -75,19 +75,22 @@
 /* ---------------------------Leyenda en la esquina---------------------------------- */
 
 .legend {
-  top: 360px;
-  left: 10px;
-  height: 120px;
-  width: 200px;
+  top: 10px;
+  left: 100px;
+  height: 40px;
+  width: 450px;
   right: 10px;
   border-radius: 10px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   font-size: 16px;
   padding: 10px;
   z-index: 2;
+  background-color: #f1f1f1;
   position: absolute;
   color: #000000;
-  background-color: rgba(209, 209, 209, 0.5);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .legend p {
   font-weight: bold;
@@ -102,16 +105,14 @@
 }
 
 .selector-container {
+  display: none;
   bottom: 20px;
   left: 10px;
   z-index: 3;
   gap: 10px;
   padding: 10px;
-  border-radius: 5px;
   transition: right 0.3s ease;
-  display: flex;
   flex-direction: column;
-  border: 2px solid #6b6a6a77;
   position: fixed;
   font-size: 14px;
 
@@ -127,6 +128,13 @@
   border-radius: 4px;
   font-size: 14px;
   background-color: #f9f9f9;
+}
+
+.movil-selector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
 }
 
 .histogramaArrow {
@@ -145,9 +153,9 @@
   transition: right 0.3s ease;
 }
 .sidebar {
-  position: fixed;
+/*   position: fixed;*/ 
   top: 0;
-  right: -350px;
+  right: 0px;
   width: 350px;
   height: 100%;
   background-color: #f0f0f0;
@@ -195,18 +203,20 @@ canvas {
   width: 110px;
   height: 45px;
   margin-right: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
   font-size: 14px;
-  background-color: #f9f9f9;
-  z-index: 4;
+  font-weight: 600;
+
+}
+.layer-selector-temporada option {
+  background-color: #ffffff;
+  border-radius: none;
 }
 
-.layerControl{
+.layerControl {
   display: flex;
   justify-content: space-between;
 }
-.layerControl hr{
+.layerControl hr {
   background-color: #333;
   width: 2px;
   margin: 10px;
@@ -214,7 +224,7 @@ canvas {
 
 .modal {
   position: fixed;
-  z-index: 1;
+  z-index: 4;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
@@ -241,26 +251,32 @@ canvas {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.checkbox-container{
+.checkbox-container {
   display: flex;
 }
-.checkbox-container input{
+.checkbox-container input {
   cursor: pointer;
 }
-.checkbox-container div{
+.checkbox-container div {
   display: flex;
   margin: 10px;
   justify-content: space-around;
 }
-
-
 
 .loader {
   width: 180px;
   height: 140px;
   display: block;
   margin: 0 auto 20px;
-  background-image: radial-gradient(circle 25px at 25px 25px, #2c68d6 100%, transparent 0), radial-gradient(circle 50px at 50px 50px, #2c68d6 100%, transparent 0), radial-gradient(circle 25px at 25px 25px, #2c68d6 100%, transparent 0), radial-gradient(circle 15px at 15px 15px, #2c68d6 100%, transparent 0), linear-gradient(#2c68d6 50px, transparent 0);
+  background-image: radial-gradient(
+      circle 25px at 25px 25px,
+      #2c68d6 100%,
+      transparent 0
+    ),
+    radial-gradient(circle 50px at 50px 50px, #2c68d6 100%, transparent 0),
+    radial-gradient(circle 25px at 25px 25px, #2c68d6 100%, transparent 0),
+    radial-gradient(circle 15px at 15px 15px, #2c68d6 100%, transparent 0),
+    linear-gradient(#2c68d6 50px, transparent 0);
   background-size: 50px 50px, 100px 75px, 50px 50px, 30px 32px, 136px 20px;
   background-repeat: no-repeat;
   background-position: 0px 30px, 30px 0px, 113px 29px, 147px 50px, 23px 60px;
@@ -268,7 +284,7 @@ canvas {
   box-sizing: border-box;
 }
 .loader::after {
-  content: '';  
+  content: "";
   position: absolute;
   left: 2px;
   top: 65px;
@@ -281,33 +297,50 @@ canvas {
 
 @keyframes animloader {
   0% {
-    box-shadow: 25px 0 rgb(255, 255, 255), 50px 0 white, 75px 0 white, 100px 0 white, 125px 0 white, 150px 0 white, 25px 0 white, 50px 0 white, 75px 0 white, 100px 0 white, 125px 0 white, 150px 0 white;
+  
+      box-shadow: 25px 0 rgb(0, 0, 255), 50px 0 rgb(0, 0, 255), 75px 0 rgb(0, 0, 255),
+        100px 0 rgb(0, 0, 255), 125px 0 rgb(0, 0, 255), 150px 0 rgb(0, 0, 255), 
+        25px 0 rgb(0, 0, 255), 50px 0 rgb(0, 0, 255), 75px 0 rgb(0, 0, 255),
+        100px 0 rgb(0, 0, 255), 125px 0 rgb(0, 0, 255), 150px 0 rgb(0, 0, 255);
+
+
   }
   50% {
-    box-shadow: 25px 20px white, 50px 60px rgba(255, 255, 255, 0), 75px 30px rgba(255, 255, 255, 0), 100px 70px rgba(255, 255, 255, 0), 125px 40px white, 150px 60px rgba(255, 255, 255, 0), 25px 20px white, 50px 30px white, 75px 10px white, 100px 30px white, 125px 30px rgba(255, 255, 255, 0), 150px 30px rgba(255, 255, 255, 0);
+    box-shadow: 25px 20px rgb(10, 22, 192), 50px 60px rgba(255, 255, 255, 0),
+      75px 30px rgba(255, 255, 255, 0), 100px 70px rgba(255, 255, 255, 0),
+      125px 40px white, 150px 60px rgba(255, 255, 255, 0), 25px 20px white,
+      50px 30px rgb(7, 81, 116), 75px 10px white, 100px 30px rgb(3, 101, 146),
+      125px 30px rgba(255, 255, 255, 0), 150px 30px rgba(255, 255, 255, 0);
   }
   100% {
-    box-shadow: 25px 60px rgba(255, 255, 255, 0), 50px 60px rgba(255, 255, 255, 0), 75px 50px rgba(255, 255, 255, 0), 100px 70px rgba(255, 255, 255, 0), 125px 70px rgba(255, 255, 255, 0), 150px 60px rgba(255, 255, 255, 0), 25px 80px rgba(255, 255, 255, 0), 50px 80px rgba(255, 255, 255, 0), 75px 70px rgba(255, 255, 255, 0), 100px 60px rgba(255, 255, 255, 0), 125px 30px rgba(255, 255, 255, 0), 150px 30px rgba(255, 255, 255, 0);
+    box-shadow: 25px 60px rgba(255, 255, 255, 0),
+      50px 60px rgba(255, 255, 255, 0), 75px 50px rgba(255, 255, 255, 0),
+      100px 70px rgba(255, 255, 255, 0), 125px 70px rgba(255, 255, 255, 0),
+      150px 60px rgba(255, 255, 255, 0), 25px 80px rgba(255, 255, 255, 0),
+      50px 80px rgba(255, 255, 255, 0), 75px 70px rgba(255, 255, 255, 0),
+      100px 60px rgba(255, 255, 255, 0), 125px 30px rgba(255, 255, 255, 0),
+      150px 30px rgba(255, 255, 255, 0);
   }
 }
-
-
 
 /* -----------------------------------------------estilos de el toltip-------------------- */
 .popup-content {
   font-size: 14px;
   color: #333;
+  font-family: "Montserrat", serif;
 }
 
 .popup-content .title {
   font-size: 16px;
   color: #2c3e50;
   font-weight: bold;
+  
 }
 
 .popup-content .section {
   margin-top: 10px;
   font-size: 14px;
+  
 }
 
 .popup-content .section .section-title {
@@ -318,4 +351,130 @@ canvas {
 
 .popup-content .section .section-value {
   margin-left: 20px;
+}
+
+/* -----------------------LKOADER  */
+
+.loader-layer {
+  width: 100%;
+  height: 4.8px;
+  display: inline-block;
+  position: relative;
+  background: rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+}
+.loader-layer::after {
+  content: '';
+  width: 192px;
+  height: 4.8px;
+  background: #2c68d6;
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+  animation: animloader-layer 2s linear infinite;
+}
+
+@keyframes animloader-layer {
+  0% {
+    left: 0;
+    transform: translateX(-100%);
+  }
+  100% {
+    left: 100%;
+    transform: translateX(0%);
+  }
+}
+    
+
+
+
+/* Para dispositivos móviles (pantallas de hasta 768px) */
+@media screen and (max-width: 768px) {
+  body {
+    font-size: 16px;
+    background-color: #fff;
+  }
+
+  .container {
+    padding: 10px;
+  }
+
+  .header {
+    font-size: 18px;
+    text-align: center;
+  }
+  .selector-container {
+    flex-direction: column;
+    width: 90%;
+  }
+  .selector-container div {
+    width: 60%;
+    justify-content: space-between;
+  }
+  .checkbox-temporal {
+    display: none !important;
+  }
+  .movil-selector {
+    display: flex;
+  }
+  .movil-selector div {
+    display: flex;
+    flex-direction: column;
+  }
+  .legend {
+    display: flex;
+    flex-direction: row;
+    position: fixed; /* Fija la leyenda en la pantalla */
+    top: 10px;
+    left: 20%;
+    height: 50px;
+    width: 70%;
+    background-color: rgba(
+      255,
+      255,
+      255,
+      0.8
+    ); /* Fondo translúcido (opcional) */
+    padding: 10px; /* Espaciado dentro de la leyenda */
+    z-index: 1; /* Asegura que la leyenda esté por encima de otros elementos */
+    font-size: 14px;
+  }
+  .legend p {
+    display: none;
+  }
+}
+ 
+/* ----------------------------estilos del incio ---------------------- */
+
+.select-inicio{
+  display: flex;
+  bottom: 20px;
+  left: 10px;
+  z-index: 1;
+  gap: 10px;
+  padding: 10px;
+  transition: right 0.3s ease;
+  position: fixed;
+  font-size: 14px;
+  align-items: center;
+  background-color: #f1f1f1;
+}
+.custom-select-inicio {
+  cursor: pointer;
+  padding: 5px;
+  width: 110px;
+  height: 45px;
+  margin-right: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.custom-select-inicio option[value=""] {
+  color: #aaa; 
+}
+.custom-select-inicio:hover {
+  background-color: #f1f1f1; 
+}
+.select-inicio span{
+  font-weight: bold;
 }

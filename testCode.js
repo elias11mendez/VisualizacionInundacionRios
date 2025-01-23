@@ -1,5 +1,8 @@
-const map = L.map("map").setView([17.710782, -91.286937], 11);
-const baseWMSUrl = "http://localhost:8080/geoserver/ne/wms";
+let lat = 17.710782;
+let log = -91.286937;
+let initialZoom = 10;
+let map = L.map("map").setView([lat, log], initialZoom);
+let baseWMSUrl = "http://localhost:8080/geoserver/zonarios/wms";
 L.control
   .scale({
     position: "bottomright",
@@ -17,7 +20,8 @@ const osmLayer = L.tileLayer(
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
   }
 ).addTo(map);
-// JavaScript
+
+// Variables
 let leftLayers = { temporal: null, permanente: null };
 let rightLayers = { temporal: null, permanente: null };
 
@@ -25,8 +29,152 @@ let leftLayerTemporal = null;
 let rightLayerTemporal = null;
 let leftLayerPermanente = null;
 let rightLayerPermanente = null;
-
 let sideBySideControl = null;
+let generalFloods = null;
+
+function configurarMapaYCapas(lat, log, baseWMSUrl) {
+  let areaName = null; // Variable global para almacenar el área seleccionada
+  let currentPeriod = "Durante"; // Período por defecto
+  
+  // Función para cargar la capa WMS
+  function cargarCapa(layerName) {
+    if (generalFloods) {
+      map.removeLayer(generalFloods); // Remover la capa existente
+    }
+
+    generalFloods = L.tileLayer
+      .wms(baseWMSUrl, {
+        layers: layerName,
+        format: "image/png",
+        transparent: true,
+        version: "1.1.0",
+        crs: L.CRS.EPSG3857,
+        formatoptions: "antialiasing:off",
+        tileSize: 256,
+        tiled: true,
+      })
+      .addTo(map);
+
+    console.log(`Capa cargada: ${layerName}`);
+  }
+
+  // Configurar el selector de período
+  const selectPeriodo = document.getElementById("SelectPeriodo");
+  selectPeriodo.value = "Durante"; // Período inicial
+
+  selectPeriodo.addEventListener("change", () => {
+    console.log(`Área actual seleccionada: ${areaName}`);
+
+    const selectedPeriod = selectPeriodo.value;
+
+    if (areaName) {
+      currentPeriod = selectedPeriod; // Actualizar el período actual
+      const layerName = `${areaName}${currentPeriod}2020`; // Generar el nombre de la capa
+      cargarCapa(layerName); // Cargar la nueva capa
+    } else {
+      console.warn("No hay un área seleccionada para actualizar la capa.");
+    }
+  });
+
+  // Cargar el archivo GeoJSON y configurar el mapa
+  fetch("Tabasco.JSON")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(
+          `Error al cargar el archivo GeoJSON: ${response.statusText}`
+        );
+      }
+      return response.json();
+    })
+    .then((data) => {
+      let allLayers = [];
+      let selectedLayer = null; // Para rastrear la capa seleccionada
+      const initialView = [lat, log]; // Coordenadas iniciales (centro del mapa)
+      const initialZoom = 10; // Nivel de zoom inicial
+
+      // Crear el mapa
+
+      // Agregar una capa base al mapa
+
+      // Crear las capas del GeoJSON
+      L.geoJSON(data, {
+        style: {
+          color: "white",
+          weight: 0.5,
+          opacity: 1,
+          fillColor: "transparent",
+          fillOpacity: 0,
+        },
+        onEachFeature: function (feature, layer) {
+          allLayers.push(layer); // Agregar la capa a la lista
+
+          layer.on({
+            click: function () {
+              const selectedAreaName = feature.properties?.NOMGEO;
+
+              if (selectedAreaName) {
+                areaName = selectedAreaName; // Actualizar la variable global
+                document.getElementById("zona-selected").innerHTML = areaName;
+
+                console.log(`Zona seleccionada: ${areaName}`);
+
+                // Restablecer estilos previos
+                allLayers.forEach((lyr) =>
+                  lyr.setStyle({ color: "white", weight: 0.2, fillOpacity: 0.1 })
+                );
+
+                // Aplicar estilo al área seleccionada
+                layer.setStyle({ color: "blue", weight: 2, fillOpacity: 0.5 });
+
+                // Guardar la capa seleccionada
+                selectedLayer = layer;
+
+                // Hacer zoom al área seleccionada
+                map.fitBounds(layer.getBounds(), { padding: [50, 50] });
+
+                // Cargar la capa correspondiente al área seleccionada y al período actual
+                cargarCapa(`${areaName}${currentPeriod}2020`);
+              } else {
+                console.error("Propiedad NOMGEO no encontrada en el feature.");
+              }
+            },
+          });
+        },
+      }).addTo(map);
+
+      // Función para restablecer el mapa
+      document.getElementById("compare").addEventListener("click", () => {
+        console.log("clickckckkc");
+
+        selectPeriodo.selectedIndex = 0;
+
+        if (generalFloods) {
+          map.removeLayer(generalFloods);
+          generalFloods = null;
+        }
+        // Restablecer estilos de todas las capas
+        allLayers.forEach((layer) =>
+          layer.setStyle({ color: "white", weight: 0.2, fillOpacity: 0.1 })
+        );
+
+        // Limpiar selección
+        selectedLayer = null;
+        areaName = null;
+        document.getElementById("zona-selected").innerHTML = "Zona Rios";
+
+        // Restablecer la vista inicial del mapa
+        map.setView(initialView, initialZoom);
+        console.log("Mapa restablecido a su estado inicial.");
+      });
+    })
+    .catch((error) => {
+      console.error("Error al cargar el archivo GeoJSON:", error);
+    });
+}
+
+// Llamar a la función con parámetros específicos
+configurarMapaYCapas(lat, log, baseWMSUrl);
+
 
 // Función para obtener el nombre de la capa basado en el año y la temporada
 function getLayerName(year, season) {
@@ -71,6 +219,9 @@ function updateLayer(year, season, side, isPermanente = true) {
         transparent: true,
         version: "1.1.0",
         crs: L.CRS.EPSG3857,
+        formatoptions: "antialiasing:off",
+        tileSize: 256,
+        tiled: true, // Activar teselas
       });
       leftLayerPermanente.addTo(map);
       console.log("capa izquierda permanente", leftLayerPermanente);
@@ -81,6 +232,9 @@ function updateLayer(year, season, side, isPermanente = true) {
         transparent: true,
         version: "1.1.0",
         crs: L.CRS.EPSG3857,
+        formatoptions: "antialiasing:off",
+        tileSize: 256,
+        tiled: true, // Activar teselas
       });
       leftLayerTemporal.addTo(map);
     }
@@ -99,6 +253,9 @@ function updateLayer(year, season, side, isPermanente = true) {
         transparent: true,
         version: "1.1.0",
         crs: L.CRS.EPSG3857,
+        formatoptions: "antialiasing:off",
+        tileSize: 256,
+        tiled: true, // Activar teselas
       });
       rightLayerPermanente.addTo(map);
       console.log(rightLayerPermanente);
@@ -109,6 +266,9 @@ function updateLayer(year, season, side, isPermanente = true) {
         transparent: true,
         version: "1.1.0",
         crs: L.CRS.EPSG3857,
+        formatoptions: "antialiasing:off",
+        tileSize: 256,
+        tiled: true, // Activar teselas
       });
       rightLayerTemporal.addTo(map);
     }
@@ -120,71 +280,117 @@ function updateLayer(year, season, side, isPermanente = true) {
   }
 }
 
-// Función para activar la comparación lado a lado
+let tooltip;
+
 function activateSideBySide() {
+  // Verificar si las capas necesarias están configuradas
   if (!leftLayerTemporal || !rightLayerTemporal) {
     console.error(
-      "Ambas capas deben estar configuradas antes de activar el comparador."
+      "Ambas capas temporales deben estar configuradas antes de activar el comparador."
     );
     return;
   }
+
   if (!leftLayerPermanente || !rightLayerPermanente) {
     console.error(
-      "Ambas capas deben estar configuradas antes de activar el comparador."
+      "Ambas capas permanentes deben estar configuradas antes de activar el comparador."
     );
     return;
   }
 
-  if (leftLayerTemporal) {
-    console.log("datos aqui datos aqui");
-    map.on("click", (e) => {
-      const { lat, lng } = e.latlng; // Obtener coordenadas del clic
+  // Variables para los estados y cuerpos de agua
+  let aguaIzquierda, aguaDerecha, estadoIzquierda, estadoDerecha;
 
-      // Crear un tooltip con información personalizada
-      const tooltip = L.tooltip()
-        .setLatLng([lat, lng]) // Establecer posición del tooltip
-        .setContent(
-          `
-          <div class="popup-content">
-            <div class="title">Cuerpos de agua en comparación</div>
-            <div class="section">
-              <div class="section-title">Lado Izquierdo:</div>
-              <div class="section-value">${
-                cuerpoAguaIzquierda ? cuerpoAguaIzquierda : "No disponible"
-              }</div>
-            </div>
-            <div class="section">
-              <div class="section-title">Lado Derecho:</div>
-              <div class="section-value">${
-                cuerpoAguaDerecha ? cuerpoAguaDerecha : "No disponible"
-              }</div>
-            </div>
-          </div>
+  const checkboxLeft = document.getElementById("leftPermanentCheckbox");
+  const checkboxRight = document.getElementById("rightPermanentCheckbox");
+
+  // Función para determinar el estado (Permanente o Temporal)
+  const obtenerEstado = (isChecked) => (isChecked ? "Permanente" : "Temporal");
+
+  // Función para actualizar los valores de agua y estado
+  const actualizarValores = () => {
+    estadoIzquierda = obtenerEstado(checkboxLeft.checked);
+    estadoDerecha = obtenerEstado(checkboxRight.checked);
+
+    aguaIzquierda = checkboxLeft.checked
+      ? cuerpoAguaIzquierda[0]
+      : cuerpoAguaIzquierda[1];
+    aguaDerecha = checkboxRight.checked
+      ? cuerpoAguaDerecha[0]
+      : cuerpoAguaDerecha[1];
+  };
+
+  // Asignar valores iniciales y escuchar cambios en los checkboxes
+  actualizarValores();
+  checkboxLeft.addEventListener("change", actualizarValores);
+  checkboxRight.addEventListener("change", actualizarValores);
+
+  // Añadir evento al mapa para mostrar tooltip al hacer clic
+  map.on("click", (e) => {
+    const { lat, lng } = e.latlng;
+
+    // Crear tooltip con la información actual
+    tooltip = L.tooltip()
+      .setLatLng([lat, lng])
+      .setContent(
         `
-        )
-        .addTo(map); // Añadir tooltip al mapa
+        <div class="popup-content" id = 'popup-content'>
+          <div class="title">Cuerpos de agua en comparación</div>
+          <div class="section">
+            <div class="section-title" style="color: ${
+              estadoIzquierda === "Permanente" ? "blue" : "#16a085"
+            };">
+              Lado Izquierdo: ${estadoIzquierda}
+            </div>
+            <div class="section-value">${aguaIzquierda || "No disponible"}</div>
+          </div>
+          <div class="section">
+            <div class="section-title" style="color: ${
+              estadoDerecha === "Permanente" ? "blue" : "#16a085"
+            };">
+              Lado Derecho: ${estadoDerecha}
+            </div>
+            <div class="section-value">${aguaDerecha || "No disponible"}</div>
+          </div>
+        </div>
+        `
+      )
+      .addTo(map);
 
-      // Opcional: Eliminar el tooltip después de un tiempo
-      setTimeout(() => {
+    // Eliminar el tooltip automáticamente después de 3 segundos
+    setTimeout(() => {
+      if (tooltip) {
         map.removeLayer(tooltip);
-      }, 3000);
-    });
-  } else {
-    return false;
-  }
+      }
+    }, 3000);
+  });
 
-  console.log(cuerpoAguaDerecha);
-  console.log(cuerpoAguaIzquierda);
+  leftLayerTemporal.on("load", function () {
+    console.log("La capa de izquierda temporal ya esta cargada .");
+  });
 
+  rightLayerTemporal.on("load", function () {
+    console.log("La capa de derecga temporal ya esta cargada .");
+    document.getElementById("loader-layer").style.display = "none";
+  });
+
+  leftLayerPermanente.on("error", function () {
+    console.log("Error al cargar la capa WMS.");
+  });
+  // Desactivar arrastre del mapa
   map.dragging.disable();
 
-  // Verificar si ya existe un control 'sideBySide'
+  // Eliminar el control sideBySide si ya existe
   if (sideBySideControl) {
     map.removeControl(sideBySideControl);
+    sideBySideControl = null;
+  }
+  if (generalFloods) {
+    map.removeLayer(generalFloods);
+    generalFloods = null;
   }
 
-  // Activar el control lado a lado
-
+  // Crear y agregar el nuevo control sideBySide
   sideBySideControl = L.control
     .sideBySide(
       [leftLayerPermanente, leftLayerTemporal],
@@ -192,22 +398,50 @@ function activateSideBySide() {
     )
     .addTo(map);
 
+  // Mostrar el contenedor de selectores
   document.querySelector(".selector-container").style.display = "flex";
+  console.log("Comparador lado a lado activado.");
 }
+
+const checkboxes = document.querySelectorAll('input[type="checkbox"]');
 
 // Función para desactivar la comparación lado a lado
 function deactivateSideBySide() {
-  if (leftLayerTemporal) map.removeLayer(leftLayerTemporal);
-  if (rightLayerTemporal) map.removeLayer(rightLayerTemporal);
+  leftYearSelector.selectedIndex = 0;
+  leftSeasonSelector.selectedIndex = 0;
+  rightYearSelector.selectedIndex = 0;
+  rightSeasonSelector.selectedIndex = 0;
 
-  map.dragging.enable();
+  checkboxes.forEach((checkbox) => {
+    if (!checkbox.disabled) {
+      checkbox.checked = false;
+    }
+  });
+  // Función para eliminar una capa si existe
+  const removeLayerIfExists = (layer) => {
+    if (layer) map.removeLayer(layer);
+  };
+  // Eliminar capas temporales y permanentes
+  [
+    leftLayerTemporal,
+    rightLayerTemporal,
+    leftLayerPermanente,
+    rightLayerPermanente,
+  ].forEach(removeLayerIfExists);
 
+  // Eliminar el control Side-by-Side si existe
   if (sideBySideControl) {
     map.removeControl(sideBySideControl);
     sideBySideControl = null;
   }
+  map.dragging.enable();
+  location.reload();
+  // Ocultar el contenedor del selector
+  const selectorContainer = document.querySelector(".selector-container");
 
-  document.querySelector(".selector-container").style.display = "none";
+  if (selectorContainer) {
+    selectorContainer.style.display = "none";
+  }
 }
 
 // Función para manejar los cambios en los selectores de la capa izquierda
@@ -221,6 +455,10 @@ document
     if (season === season) {
       document.getElementById("loader").style.display = "none";
     }
+    if (generalFloods) {
+      map.removeLayer(generalFloods)
+      generalFloods= null
+    }
   });
 
 document
@@ -230,6 +468,10 @@ document
 
     const year = document.getElementById("leftYearSelector").value;
     if (year && season) updateLayer(year, season, "left");
+    if (generalFloods) {
+      map.removeLayer(generalFloods)
+      generalFloods= null
+    }
   });
 
 // Función para manejar los cambios en los selectores de la capa derecha
@@ -268,7 +510,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const leftSeasonSelector = document.getElementById("leftSeasonSelector");
   const rightYearSelector = document.getElementById("rightYearSelector");
   const rightSeasonSelector = document.getElementById("rightSeasonSelector");
-
   // Función para actualizar las capas basadas en el checkbox y selectores
   function updateLayersWithCheckbox(side) {
     const year =
