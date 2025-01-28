@@ -19,26 +19,29 @@
     />
   </head>
   <link rel="icon" href="/src/assets/academicos.ico" type="image/x-icon" />
-
   <body>
     <div id="map"></div>
+
     <button class="btnSide" id="activateSide">
       <i class="bx bx-vertical-center"></i>
     </button>
 
-  
-    <button id="compare" class="btnSideInfo">
-      <i class='bx bx-crosshair'></i>
-
+    <button id="btn-endClean" class="btnSideInfo">
+      <i class="bx bx-crosshair"></i>
     </button>
+
+    <button id="info-side" class="info-side">
+      <i class="bx bx-info-circle"></i>
+    </button>
+
     <div class="selector-container">
       <!-- CAPA IZQUIERDA -->
       <div class="layerControl">
         <div class="checkbox-container">
-          <div class="checkbox-temporal">
+          <!--   <div class="checkbox-temporal">
             <label>Agua Temporal</label>
             <input type="checkbox" checked disabled />
-          </div>
+          </div> -->
           <!-- CAPA IZQUIERDA Checkbox -->
 
           <div>
@@ -48,15 +51,16 @@
               id="leftPermanentCheckbox"
               name="leftPermanentCheckbox"
               value="leftPermanentCheckbox"
+              disabled
             />
           </div>
         </div>
         <hr />
         <div class="checkbox-container">
-          <div class="checkbox-temporal">
+          <!--     <div class="checkbox-temporal">
             <label>Agua Temporal</label>
             <input type="checkbox" checked disabled />
-          </div>
+          </div> -->
           <!-- Capa derecha checkbox -->
           <div>
             <label>Agua Permanente </label>
@@ -65,6 +69,7 @@
               id="rightPermanentCheckbox"
               name="rightPermanentCheckbox"
               value="rightPermanentCheckbox"
+              disabled
             />
           </div>
         </div>
@@ -117,26 +122,57 @@
       <i class="bx bxs-chevron-left"></i>
     </div>
     <div class="sidebar" id="sidebar">
-      <p>Histograma de inundaciones</p>
+      <!-- Título y botón para abrir el modal -->
+      <div class="sidebar-indice">
+        <p>Histograma de inundaciones</p>
+        <button style="display: none; align-items: center" id="openModalBtn">
+          Ver histograma Anual<i class="bx bx-chevron-right"></i>
+        </button>
+      </div>
 
-      <button style="display: flex; align-items: center" id="openModalBtn">
-        Ver histograma Anual<i class="bx bx-chevron-right"></i>
-      </button>
+      <!-- Contenedor de histogramas -->
+      <div class="histogramas-container">
+        <!-- Sección de ZonaRios y Municipio -->
+        <div id="zonaRiosMunicipio" class="grafica-group">
+          <div class="canvas-container">
+            <canvas
+              id="histogramaZonaRios"
+              width="200px"
+              height="200px"
+            ></canvas>
 
-      <canvas
-        id="histogramaLeftTemporal"
-        width="800px"
-        height="600px"
-        class="chart"
-      ></canvas>
+            <canvas
+              id="histogramaMunicipio"
+              width="200px"
+              height="200px"
+            ></canvas>
+          </div>
+        </div>
 
-      <span class="loader" id="loader">Seleccione un año...</span>
+        <!-- Sección de LeftTemporal y RightTemporal (inicialmente oculta) -->
+        <div id="temporal" class="grafica-group" style="display: none">
+          <div class="canvas-container">
+            <canvas
+              id="histogramaLeftTemporal"
+              width="200px"
+              height="200px"
+            ></canvas>
 
-      <canvas
-        id="histogramaRightTemporal"
-        width="800px"
-        height="600px"
-      ></canvas>
+            <div class="loader-container-right">
+              <span id="loader" class="loader-right"></span>
+            </div>
+
+            <div class="loader-container-left">
+              <span class="loader-left"></span>
+            </div>
+            <canvas
+              id="histogramaRightTemporal"
+              width="200px"
+              height="200px"
+            ></canvas>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div id="myModal" class="modal">
@@ -158,6 +194,7 @@
         <!-- <button onclick="updateThirdChart()">ver datos</button> -->
       </div>
     </div>
+
     <!-- CUADRO DE HISTOGRAMA -->
     <div id="state-legend" class="legend">
       <div><span style="background-color: #000000"></span>Sin datos</div>
@@ -165,7 +202,7 @@
       <div><span style="background-color: blue"></span>Agua Permanente</div>
     </div>
 
-    <div class="select-inicio"> 
+    <div class="select-inicio">
       <div>
         <label for="">Periodo de capa: </label>
         <select class="custom-select-inicio" id="SelectPeriodo">
@@ -179,7 +216,54 @@
       <span id="zona-selected">Zona Rios</span>
     </div>
 
-    <script src="/testCode.js"></script>
-    <script src="/src/code/interacionStyles.js"></script>
+    <div class="label-selected-area-container">
+      <span id="label-selected-area">Zona Rios</span>
+      <span id="label-periodo">Durante</span>
+      <span>2020</span>
+    </div>
+
+      <div id="modal-info" class="modal-info">
+        <div class="modal-content-info">
+          <span class="close-info"><i class="bx bx-x"></i></span>
+          <div class="info-container">
+            <span>
+              <i class="bx bx-vertical-center"></i>
+              <p>Inicia un comparador entre capas.</p>
+            </span>
+
+            <span>
+              <i class="bx bx-crosshair"></i>
+              <p>Inicia la visualizacion regional.</p>
+            </span>
+
+            <span>
+              <i class="bx bx-info-circle"></i>
+              <p>Muestra una guia rapida de la plataforma.</p>
+            </span>
+
+            <span>
+              <div class="zoom-container">
+                <div><i class="bx bx-plus"></i></div>
+                <div><i class="bx bx-minus"></i></div>
+              </div>
+
+              <p>Controlador de zoom.</p>
+            </span>
+
+            <span class="span-seleccion-capa">
+              <img src="/src/assets/seleccioncapas.png" alt="seleccioncapas" />
+              <p>Permite seleccionar las capas a mostrar y comparar.</p>
+            </span>
+
+            <span class="span-seleccion-capa">
+              <img src="/src/assets/image.png" alt="seleccionperiodo" />
+              <p>Permite seleccionar el periodo a mostrar, y la zona donde se encuntra posicionado.</p>
+            </span>
+
+          </div>
+        </div>
+      </div>
+    <script src="/mainLogic.js"></script>
+    <script src="/src/code/dataVisualization.js"></script>
   </body>
 </html>

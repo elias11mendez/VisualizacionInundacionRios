@@ -1,6 +1,7 @@
 let lat = 17.710782;
 let long = -91.286937;
 let initialZoom = 10;
+let initialView;
 let map = L.map("map").setView([lat, long], initialZoom);
 let baseWMSUrl = "http://localhost:8080/geoserver/zonarios/wms";
 L.control
@@ -83,7 +84,6 @@ function capasMunicipio(lat, long, baseWMSUrl) {
   selectPeriodo.addEventListener("change", () => {
     const selectedPeriod = selectPeriodo.value;
     currentPeriod = selectedPeriod;
-    document.getElementById("label-periodo").innerHTML = selectedPeriod;
 
     // Actualizar la capa de Zona Ríos
     if (zonaRiosFloods) {
@@ -112,7 +112,7 @@ function capasMunicipio(lat, long, baseWMSUrl) {
     })
     .then((data) => {
       // Para rastrear la capa seleccionada
-      const initialView = [lat, long]; // Coordenadas iniciales (centro del mapa)
+      initialView = [lat, long]; // Coordenadas iniciales (centro del mapa)
 
       // Crear las capas del GeoJSON
       L.geoJSON(data, {
@@ -174,55 +174,57 @@ function capasMunicipio(lat, long, baseWMSUrl) {
 
       // Función para restablecer el mapa
       document.getElementById("btn-endClean").addEventListener("click", () => {
-        // Remover capas del mapa si existen
+        activarEndClean();
+      });
+
+      // Función para restablecer el mapa
+      function activarEndClean() {
         if (municipioFloods) {
           map.removeLayer(municipioFloods);
           municipioFloods = null;
         }
+
         if (leftLayerTemporal) map.removeLayer(leftLayerTemporal);
         if (leftLayerPermanente) map.removeLayer(leftLayerPermanente);
         if (rightLayerPermanente) map.removeLayer(rightLayerPermanente);
         if (rightLayerTemporal) map.removeLayer(rightLayerTemporal);
 
-        // Remover el control Side by Side si existe
         if (sideBySideControl) {
           map.removeControl(sideBySideControl);
           sideBySideControl = null;
         }
 
-        // Habilitar el arrastre del mapa
         map.dragging.enable();
 
-        // Restablecer estilos de todas las capas
+        // Restablecer el estilo de todas las capas
         allLayers.forEach((layer) => {
-          layer.setStyle({ color: "white", weight: 0.2, fillOpacity: 0.1 });
+          layer.setStyle({
+            color: "white",
+            weight: 0.2,
+            fillOpacity: 0.1,
+          });
         });
 
-        // Enviar evento personalizado para cambiar el municipio
-        areaName = "Zona Rios"; // Restablecer el área seleccionada
+        // Cambiar el municipio y notificar mediante un evento personalizado
+        areaName = "Zona Rios";
         const event = new CustomEvent("estoenviaelcambiodelmunicipio", {
           detail: areaName,
         });
         window.dispatchEvent(event);
 
-        // Actualizar el texto de la zona seleccionada
         document.getElementById("zona-selected").innerHTML = areaName;
 
-        // Restablecer la vista inicial del mapa
         map.setView(initialView, initialZoom);
 
-        // Obtener el valor seleccionado en el <select>
         const selectedPeriod = document.getElementById("SelectPeriodo").value;
 
-        // Construir el nombre de la capa a cargar
         const layerZonaRios = `ZonaRios${selectedPeriod}2020`;
 
-        // Remover la capa previa si existe
         if (zonaRiosFloods) {
           map.removeLayer(zonaRiosFloods);
         }
 
-        // Agregar la nueva capa al mapa
+        // Añadir la nueva capa de Zona Rios al mapa
         zonaRiosFloods = L.tileLayer
           .wms(baseWMSUrl, {
             layers: layerZonaRios,
@@ -235,7 +237,7 @@ function capasMunicipio(lat, long, baseWMSUrl) {
             tiled: true,
           })
           .addTo(map);
-      });
+      }
 
       // Cargar la capa inicial de Zona Ríos
       const initialLayerZonaRios = `ZonaRios${currentPeriod}2020`;
@@ -381,7 +383,10 @@ function activateSideBySide() {
 
   const checkboxLeft = document.getElementById("leftPermanentCheckbox");
   const checkboxRight = document.getElementById("rightPermanentCheckbox");
-
+  if (leftLayerTemporal || rightLayerTemporal) {
+    checkboxLeft.disabled = false;
+    checkboxRight.disabled = false;
+  }
   // Función para determinar el estado (Permanente o Temporal)
   const obtenerEstado = (isChecked) => (isChecked ? "Permanente" : "Temporal");
 
@@ -474,9 +479,8 @@ document
 
     const season = document.getElementById("leftSeasonSelector").value;
     if (year && season) updateLayer(year, season, "left");
-    if (season === season) {
-      document.getElementById("loader").style.display = "none";
-    }
+    
+    
     if (municipioFloods) {
       map.removeLayer(municipioFloods);
       municipioFloods = null;
@@ -504,10 +508,6 @@ document
 
     const season = document.getElementById("rightSeasonSelector").value;
     if (year && season) updateLayer(year, season, "right");
-
-    if (season === season) {
-      document.getElementById("loader").style.display = "none";
-    }
   });
 
 document
@@ -561,7 +561,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Listeners para los selectores de año y temporada
   if (leftYearSelector && leftSeasonSelector) {
     leftYearSelector.addEventListener("change", function () {
       updateLayersWithCheckbox("left");
