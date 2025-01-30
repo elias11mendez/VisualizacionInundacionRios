@@ -4,6 +4,7 @@ let initialZoom = 10;
 let initialView;
 let map = L.map("map").setView([lat, long], initialZoom);
 let baseWMSUrl = "http://localhost:8080/geoserver/zonarios/wms";
+
 L.control
   .scale({
     position: "bottomright",
@@ -41,7 +42,7 @@ let areaName = null;
 function capasMunicipio(lat, long, baseWMSUrl) {
   function cargarZonaRios(layerName) {
     if (zonaRiosFloods) {
-      map.removeLayer(zonaRiosFloods); // Remover la capa existente
+      map.removeLayer(zonaRiosFloods);
     }
 
     zonaRiosFloods = L.tileLayer
@@ -77,9 +78,8 @@ function capasMunicipio(lat, long, baseWMSUrl) {
       .addTo(map);
   }
 
-  // Configurar el selector de período
   selectPeriodo = document.getElementById("SelectPeriodo");
-  selectPeriodo.value = "Durante"; // Período inicial
+  selectPeriodo.value = "Durante";
 
   selectPeriodo.addEventListener("change", () => {
     const selectedPeriod = selectPeriodo.value;
@@ -111,8 +111,7 @@ function capasMunicipio(lat, long, baseWMSUrl) {
       return response.json();
     })
     .then((data) => {
-      // Para rastrear la capa seleccionada
-      initialView = [lat, long]; // Coordenadas iniciales (centro del mapa)
+      initialView = [lat, long];
 
       // Crear las capas del GeoJSON
       L.geoJSON(data, {
@@ -130,7 +129,7 @@ function capasMunicipio(lat, long, baseWMSUrl) {
             click: function () {
               selectedAreaName = feature.properties?.NOMGEO;
               if (selectedAreaName) {
-                areaName = selectedAreaName; // Actualizar la variable global
+                areaName = selectedAreaName;
 
                 document.getElementById("zona-selected").innerHTML = areaName;
 
@@ -143,8 +142,14 @@ function capasMunicipio(lat, long, baseWMSUrl) {
                   map.removeLayer(zonaRiosFloods);
                   zonaRiosFloods = null;
                 }
+                if (zonaRiosAntes) {
+                  map.removeLayer(zonaRiosAntes);
+                }
+                if (zonaRiosDespues) {
+                  map.removeLayer(zonaRiosDespues);
+    
+                }
 
-                // Restablecer estilos previos
                 allLayers.forEach((lyr) =>
                   lyr.setStyle({
                     color: "white",
@@ -153,16 +158,12 @@ function capasMunicipio(lat, long, baseWMSUrl) {
                   })
                 );
 
-                // Aplicar estilo al área seleccionada
                 layer.setStyle({ color: "white", weight: 2, fillOpacity: 0.5 });
 
-                // Guardar la capa seleccionada
                 selectedLayer = layer;
 
-                // Hacer zoom al área seleccionada
                 map.fitBounds(layer.getBounds(), { padding: [50, 50] });
 
-                // Cargar la capa correspondiente al área seleccionada y al período actual
                 cargarCapa(`${areaName}${currentPeriod}2020`);
               } else {
                 console.error("Propiedad NOMGEO no encontrada en el feature.");
@@ -172,7 +173,6 @@ function capasMunicipio(lat, long, baseWMSUrl) {
         },
       }).addTo(map);
 
-      // Función para restablecer el mapa
       document.getElementById("btn-endClean").addEventListener("click", () => {
         activarEndClean();
       });
@@ -367,6 +367,14 @@ function activateSideBySide() {
     return;
   }
 
+  /* 
+  if (map.hasLayer(leftLayerTemporal)) {
+    console.log('La capa "leftLayerTemporal" ya está cargada en el mapa');
+    document.querySelector(".loader-layer").style.display = 'none'
+} else {
+    console.log('La capa "leftLayerTemporal" NO está cargada en el mapa');
+} */
+
   // Eliminar las capas de zonariosFlood y municipioFloods si están activas
   if (zonaRiosFloods) {
     map.removeLayer(zonaRiosFloods);
@@ -479,8 +487,7 @@ document
 
     const season = document.getElementById("leftSeasonSelector").value;
     if (year && season) updateLayer(year, season, "left");
-    
-    
+
     if (municipioFloods) {
       map.removeLayer(municipioFloods);
       municipioFloods = null;

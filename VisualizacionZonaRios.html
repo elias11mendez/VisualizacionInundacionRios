@@ -20,19 +20,38 @@
   </head>
   <link rel="icon" href="/src/assets/academicos.ico" type="image/x-icon" />
   <body>
+    <nav class="nav">
+      <div class="nav-title">
+        <h1>Sistema de Mapeo de la Zona de los Ríos de Tabasco</h1>
+      </div>
+      <div class="nav-logos">
+        <img src="/src/assets/academicos.ico" alt="logo-academicos" />
+        <img
+          src="https://sic.cultura.gob.mx/imagenes_cache/universidad_1874_g_10230.png"
+          alt="logo-itsr"
+        />
+        <img
+          src="https://scontent.fvsa2-1.fna.fbcdn.net/v/t39.30808-6/421599598_849229843878595_2835057821307286351_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeGEgJYA5am2zEnPvrT3fuyg0y8bi8Mx1MTTLxuLwzHUxHWMOHPuWBKkuvPFVZ0cfUR_tBU1-6IIlWHiucKqH8Fo&_nc_ohc=NMfwTCAEhn4Q7kNvgH4qlvK&_nc_zt=23&_nc_ht=scontent.fvsa2-1.fna&_nc_gid=AGdZU4WBsFwlvqRBOex9lOV&oh=00_AYBjM5L2URuoM2pKOIJsaHosoMPK0YLNh6gltEHpvTxWNw&oe=679ECEED"
+          alt="logo-tecnm"
+        />
+      </div>
+    </nav>
+
     <div id="map"></div>
 
-    <button class="btnSide" id="activateSide">
-      <i class="bx bx-vertical-center"></i>
-    </button>
+    <div class="btn-container">
+      <button class="btnSide" id="activateSide">
+        <i class="bx bx-vertical-center" style="rotate: 90deg"></i>
+      </button>
 
-    <button id="btn-endClean" class="btnSideInfo">
-      <i class="bx bx-crosshair"></i>
-    </button>
+      <button id="btn-endClean" class="btnSideInfo">
+        <i class="bx bx-crosshair"></i>
+      </button>
 
-    <button id="info-side" class="info-side">
-      <i class="bx bx-info-circle"></i>
-    </button>
+      <button id="info-side" class="info-side">
+        <i class="bx bx-info-circle"></i>
+      </button>
+    </div>
 
     <div class="selector-container">
       <!-- CAPA IZQUIERDA -->
@@ -114,7 +133,8 @@
           </select>
         </div>
       </div>
-      <span class="loader-layer" id="loader-layer"></span>
+      <!--       <span class="loader-layer" id="loader-layer"></span>
+ -->
     </div>
 
     <!-- CUADRO DE HISTOGRAMA -->
@@ -125,9 +145,6 @@
       <!-- Título y botón para abrir el modal -->
       <div class="sidebar-indice">
         <p>Histograma de inundaciones</p>
-        <button style="display: none; align-items: center" id="openModalBtn">
-          Ver histograma Anual<i class="bx bx-chevron-right"></i>
-        </button>
       </div>
 
       <!-- Contenedor de histogramas -->
@@ -171,6 +188,9 @@
               height="200px"
             ></canvas>
           </div>
+          <button class="btn-graficas-anual" id="openModalBtn">
+            Ver histograma Anual <i class="bx bx-scatter-chart"></i>
+          </button>
         </div>
       </div>
     </div>
@@ -197,13 +217,24 @@
 
     <!-- CUADRO DE HISTOGRAMA -->
     <div id="state-legend" class="legend">
-      <div><span style="background-color: #000000"></span>Sin datos</div>
-      <div><span style="background-color: cyan"></span>Agua Temporal</div>
-      <div><span style="background-color: blue"></span>Agua Permanente</div>
+      <div><span style="background-color: yellow"></span>Antes</div>
+      <div><span style="background-color: red"></span>Durante</div>
+      <div><span style="background-color: cyan"></span>Despues</div>
+      <div><span style="background-color: blue"></span>Cuerpos temporales</div>
     </div>
 
     <div class="select-inicio">
-      <div>
+      <div class="checkbox-permanent">
+        <label>Agua Permanente </label>
+        <input
+          type="checkbox"
+          id="CheckboxPermanent"
+          name=""
+          value="CheckboxPermanent"
+        />
+      </div>
+
+      <div class="select-inicio-selected">
         <label for="">Periodo de capa: </label>
         <select class="custom-select-inicio" id="SelectPeriodo">
           <option value="">Periodo</option>
@@ -211,58 +242,66 @@
           <option value="Durante">Durante</option>
           <option value="Despues">Despues</option>
         </select>
+
+        <label for="">Zona seleccionada: </label>
+        <span id="zona-selected">Zona Ríos</span>
       </div>
-      <label for="">Zona seleccionada: </label>
-      <span id="zona-selected">Zona Rios</span>
     </div>
 
     <div class="label-selected-area-container">
-      <span id="label-selected-area">Zona Rios</span>
+      <span id="label-selected-area">Zona Ríos</span>
       <span id="label-periodo">Durante</span>
       <span>2020</span>
     </div>
 
-      <div id="modal-info" class="modal-info">
-        <div class="modal-content-info">
-          <span class="close-info"><i class="bx bx-x"></i></span>
-          <div class="info-container">
-            <span>
-              <i class="bx bx-vertical-center"></i>
-              <p>Inicia un comparador entre capas.</p>
-            </span>
+    <div id="modal-info" class="modal-info">
+      <div class="modal-content-info">
+        <span class="close-info"><i class="bx bx-x"></i></span>
+        <div class="info-container">
+          <span>
+            <i class="bx bx-vertical-center"></i>
+            <p>Comparador entre capas.</p>
+          </span>
 
-            <span>
-              <i class="bx bx-crosshair"></i>
-              <p>Inicia la visualizacion regional.</p>
-            </span>
+          <span>
+            <i class="bx bx-crosshair"></i>
+            <p>Visualización regional.</p>
+          </span>
 
-            <span>
-              <i class="bx bx-info-circle"></i>
-              <p>Muestra una guia rapida de la plataforma.</p>
-            </span>
+          <span>
+            <i class="bx bx-info-circle"></i>
+            <p>Guia rápida de la plataforma.</p>
+          </span>
 
-            <span>
-              <div class="zoom-container">
-                <div><i class="bx bx-plus"></i></div>
-                <div><i class="bx bx-minus"></i></div>
-              </div>
+          <span>
+            <div class="zoom-container">
+              <div><i class="bx bx-plus"></i></div>
+              <div><i class="bx bx-minus"></i></div>
+            </div>
 
-              <p>Controlador de zoom.</p>
-            </span>
+            <p>Controlador de zoom.</p>
+          </span>
 
-            <span class="span-seleccion-capa">
-              <img src="/src/assets/seleccioncapas.png" alt="seleccioncapas" />
-              <p>Permite seleccionar las capas a mostrar y comparar.</p>
-            </span>
+          <span class="span-seleccion-capa">
+            <img src="/src/assets/seleccioncapas.png" alt="seleccioncapas" />
+            <p>Seleccionador las capas a mostrar y comparar.</p>
+          </span>
 
-            <span class="span-seleccion-capa">
-              <img src="/src/assets/image.png" alt="seleccionperiodo" />
-              <p>Permite seleccionar el periodo a mostrar, y la zona donde se encuntra posicionado.</p>
-            </span>
-
-          </div>
+          <span class="span-seleccion-capa">
+            <img src="/src/assets/image.png" alt="seleccionperiodo" />
+            <p>Seleccionador de período a mostrar.</p>
+          </span>
+          <span>
+            <div class="comparador-circle">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <p>Comparador de capas.</p>
+          </span>
         </div>
       </div>
+    </div>
     <script src="/mainLogic.js"></script>
     <script src="/src/code/dataVisualization.js"></script>
   </body>
