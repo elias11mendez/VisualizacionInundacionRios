@@ -2,9 +2,27 @@ let lat = 17.710782;
 let long = -91.286937;
 let initialZoom = 10;
 let initialView;
+let zIndexView = 2;
+let leftLayers = { temporal: null, permanente: null };
+let rightLayers = { temporal: null, permanente: null };
+let leftLayerTemporal = null;
+let rightLayerTemporal = null;
+let leftLayerPermanente = null;
+let rightLayerPermanente = null;
+let sideBySideControl = null;
+let municipioFloods = null;
+let selectedPeriod = null;
+let currentPeriod = "Durante";
+let zonaRiosFloods = null;
+let allLayers = [];
+let selectedLayer = null;
+let areaName = null;
+let checkboxPermanent;
+let zonaRiosPermanent = null;
+let municipioPermanent = null;
 let map = L.map("map").setView([lat, long], initialZoom);
 let baseWMSUrl = "http://localhost:8080/geoserver/zonarios/wms";
-let zIndexView = 2;
+
 L.control
   .scale({
     position: "bottomright",
@@ -39,203 +57,102 @@ const openstreetmap = L.tileLayer(
 );
 
 console.log(zIndexView);
-
-let iconoActivo = false;
-let isVisible = true;
-let iconoChange;
 let allMunicipiosLayers = [];
 
+let isVisible = true;
+
 const btnLayerView = document.getElementById("btn-layerView");
+const iconoChange = document.getElementById("icono-change");
 
-if (btnLayerView) {
-  btnLayerView.addEventListener("click", () => {
-    let capaModificada = false;
-
-    if (isVisible) {
-      if (zonaRiosFloods) {
-        zonaRiosFloods.setOpacity(0);
-        capaModificada = true;
-      } else {
-        console.warn("No hay capa de la zona de ríos");
-      }
-
-      if (zonaRiosDurante) {
-        zonaRiosDurante.setOpacity(0);
-        zonaRiosDespues.setOpacity(0);
-        zonaRiosAntes.setOpacity(0);
-        capaModificada = true;
-      } else {
-        console.warn("No hay capa de la zona de ríos");
-      }
-
-      if (municipioFloods) {
-        municipioFloods.setOpacity(0);
-        capaModificada = true;
-      } else {
-        console.warn("No hay capa de municipios seleccionada");
-      }
-
-      if (allMunicipiosLayers.length > 0) {
-        allMunicipiosLayers[0].setOpacity(0);
-        allMunicipiosLayers[1].setOpacity(0);
-        allMunicipiosLayers[2].setOpacity(0);
-
-        capaModificada = true;
-      } else {
-        console.warn("No hay capas de municipios disponibles.");
-      }
-
-      if (capaModificada) {
-        console.log("Capas ocultas");
-      }
-    } else {
-      if (zonaRiosFloods) {
-        zonaRiosFloods.setOpacity(1);
-        capaModificada = true;
-      }
-      if (municipioFloods) {
-        municipioFloods.setOpacity(1);
-        capaModificada = true;
-      }
-
-      if (zonaRiosDurante) {
-        zonaRiosDurante.setOpacity(1);
-        zonaRiosDespues.setOpacity(1);
-        zonaRiosAntes.setOpacity(1);
-
-        capaModificada = true;
-      } else {
-        console.warn("No hay capa de la zona de ríos");
-      }
-
-      if (allMunicipiosLayers.length > 0) {
-        allMunicipiosLayers[0].setOpacity(1);
-        allMunicipiosLayers[1].setOpacity(1);
-        allMunicipiosLayers[2].setOpacity(1);
-
-        capaModificada = true;
-      } else {
-        console.warn("No hay capas de municipios disponibles.");
-      }
-
-      if (capaModificada) {
-        console.log("Capas mostradas");
-      }
-    }
-
-    if (capaModificada) {
-      iconoActivo = !iconoActivo;
-      console.log(capaModificada, "CAPA MODIFICADA");
-
-      iconoChange = document.getElementById("icono-change");
-      if (iconoChange) {
-        iconoChange.className = iconoActivo ? "bx bx-show" : "bx bx-low-vision";
-      }
-
-      isVisible = !isVisible;
+// Función para alternar visibilidad de capas
+function toggleLayerVisibility(layers, visibility) {
+  layers.forEach(layer => {
+    if (layer?.setOpacity) {
+      layer.setOpacity(visibility);
     }
   });
-} else {
-  console.error("El botón btn-layerView no se encontró en el DOM");
 }
-const btnLayerSatelite = document.getElementById("btn-layer-satelite");
-const btnLayerOpenstreet = document.getElementById("btn-layer-openstreetmap");
-const btnLayerCartoblack = document.getElementById("btn-layer-cartoblack");
+
+btnLayerView.addEventListener("click", () => {
+  isVisible = !isVisible;
+  const newOpacity = isVisible ? 1 : 0;
+  const newIconClass = isVisible ? "bx bx-show" : "bx bx-low-vision";
+
+  const layers = [zonaRiosAntes, zonaRiosDespues, zonaRiosDurante, zonaRiosFloods, municipioFloods];
+
+  toggleLayerVisibility(layers, newOpacity);
+
+  if (iconoChange) iconoChange.className = newIconClass;
+
+  console.log(isVisible ? "Capas visibles" : "Capas ocultas");
+});
+
 const optionMaps = document.querySelector(".map-layer-container");
 const btnOptionsMap = document.getElementById("btn-option-maps");
 
+var mapsDisplay = window.getComputedStyle(optionMaps).display;
+
 btnOptionsMap.addEventListener("click", () => {
-  if (optionMaps.style.display === "none") {
-    optionMaps.style.display = "flex"
-  }else{
-    optionMaps.style.display = "none"
+  var mapsDisplay = window.getComputedStyle(optionMaps).display;
+
+  if (mapsDisplay === "none") {
+    optionMaps.style.display = "flex";
+  } else {
+    optionMaps.style.display = "none";
   }
 });
 
 let labelColorLayer;
+const btnLayerSatelite = document.getElementById("btn-layer-satelite");
+const btnLayerOpenstreet = document.getElementById("btn-layer-openstreetmap");
+const btnLayerCartoblack = document.getElementById("btn-layer-cartoblack");
+
+const layers = {
+  esri: esriLayer,
+  openstreet: openstreetmap,
+  cartoBlack: cartoblack,
+};
+
+const buttons = {
+  esri: btnLayerSatelite,
+  openstreet: btnLayerOpenstreet,
+  cartoBlack: btnLayerCartoblack,
+};
+
+function setActiveLayer(activeLayerKey, labelColor) {
+  Object.keys(layers).forEach((key) => {
+    if (map.hasLayer(layers[key])) {
+      map.removeLayer(layers[key]);
+    }
+  });
+
+  if (layers[activeLayerKey]) {
+    layers[activeLayerKey].addTo(map);
+  }
+
+  Object.keys(buttons).forEach((key) => {
+    buttons[key].style.opacity = key === activeLayerKey ? "0.5" : "1";
+  });
+
+  labelColorLayer = document.querySelector(".label-selected-area-container");
+  if (labelColorLayer) {
+    labelColorLayer.style.color = labelColor;
+  }
+}
 
 btnLayerSatelite.addEventListener("click", () => {
-  console.log("click");
-
-  if (openstreetmap || cartoblack) {
-    btnLayerSatelite.style.opacity = "0.5";
-    btnLayerOpenstreet.style.opacity = "1";
-    btnLayerCartoblack.style.opacity = "1";
-  }
-  if (cartoblack && openstreetmap) {
-    if (map.hasLayer(cartoblack)) {
-      map.removeLayer(cartoblack);
-      map.removeLayer(openstreetmap);
-
-      btnLayerSatelite.style.opacity = "0.5";
-
-      esriLayer.addTo(map);
-      labelColorLayer = document.querySelector(
-        ".label-selected-area-container"
-      );
-      labelColorLayer.style.color = "white";
-    } else {
-      map.removeLayer(openstreetmap);
-      esriLayer.addTo(map);
-      labelColorLayer.style.color = "white";
-    }
-  }
+  console.log("Cambiando a capa Satélite");
+  setActiveLayer("esri", "white");
 });
 
 btnLayerOpenstreet.addEventListener("click", () => {
-  console.log("click");
-
-  if (esriLayer || cartoblack) {
-    btnLayerSatelite.style.opacity = "1";
-    btnLayerOpenstreet.style.opacity = "1";
-    btnLayerCartoblack.style.opacity = "1";
-  }
-
-  if (openstreetmap) {
-    btnLayerOpenstreet.style.opacity = "0.5";
-  }
-  if (cartoblack && esriLayer) {
-    if (map.hasLayer(cartoblack)) {
-      map.removeLayer(cartoblack);
-      map.removeLayer(esriLayer);
-
-      btnLayerOpenstreet.style.opacity = "0.5";
-      btnLayerSatelite.style.opacity = "1";
-
-      openstreetmap.addTo(map);
-      labelColorLayer = document.querySelector(
-        ".label-selected-area-container"
-      );
-      labelColorLayer.style.color = "#333";
-    } else {
-      map.removeLayer(esriLayer);
-      openstreetmap.addTo(map);
-      labelColorLayer.style.color = "#333";
-    }
-  }
+  console.log("Cambiando a capa OpenStreetMap");
+  setActiveLayer("openstreet", "#333");
 });
 
 btnLayerCartoblack.addEventListener("click", () => {
-  console.log("click");
-  if (esriLayer || openstreetmap) {
-    btnLayerSatelite.style.opacity = "1";
-    btnLayerOpenstreet.style.opacity = "1";
-    btnLayerCartoblack.style.opacity = "0.5";
-  }
-  if (openstreetmap && esriLayer) {
-    if (map.hasLayer(cartoblack)) {
-      map.removeLayer(openstreetmap);
-      cartoblack.addTo(map);
-      labelColorLayer = document.querySelector(
-        ".label-selected-area-container"
-      );
-      labelColorLayer.style.color = "#888";
-    } else {
-      map.removeLayer(esriLayer);
-      cartoblack.addTo(map);
-      labelColorLayer.style.color = "#888";
-    }
-  }
+  console.log("Cambiando a capa CartoBlack");
+  setActiveLayer("cartoBlack", "#888");
 });
 
 let capasActivas = false; // Inicia en falso para evitar problemas si lo pongo en true deja de funcionar
@@ -307,25 +224,6 @@ checkboxAllLayer.addEventListener("change", function () {
   }
 });
 
-// Variables
-let leftLayers = { temporal: null, permanente: null };
-let rightLayers = { temporal: null, permanente: null };
-
-let leftLayerTemporal = null;
-let rightLayerTemporal = null;
-let leftLayerPermanente = null;
-let rightLayerPermanente = null;
-let sideBySideControl = null;
-let municipioFloods = null;
-let selectedPeriod = null;
-let currentPeriod = "Durante";
-let zonaRiosFloods = null;
-let allLayers = [];
-let selectedLayer = null;
-let areaName = null;
-let checkboxPermanent;
-let zonaRiosPermanent = null;
-let municipioPermanent = null;
 checkboxPermanent = document.getElementById("Checkbox-Permanent");
 
 checkboxPermanent.addEventListener("change", function () {
@@ -351,6 +249,18 @@ checkboxPermanent.addEventListener("change", function () {
   }
 });
 
+if (currentPeriod) {
+  iconoChange.className = "bx bx-show";
+  console.log(currentPeriod);
+  console.log("caso verdaro");
+} else {
+  iconoChange.className = "bx bx-show";
+  console.log("caso contrario");
+}
+if (currentPeriod) {
+  iconoChange.className = "bx bx-show";
+} else {
+}
 function capasMunicipio(lat, long, baseWMSUrl) {
   function cargarZonaRios(layerName) {
     if (zonaRiosFloods) {
@@ -369,6 +279,7 @@ function capasMunicipio(lat, long, baseWMSUrl) {
       map.removeLayer(zonaRiosDurante);
       checkboxAllLayer.checked = false;
     }
+
     if (municipioPermanent) {
       map.removeLayer(municipioPermanent);
     }
@@ -509,33 +420,20 @@ function capasMunicipio(lat, long, baseWMSUrl) {
   selectPeriodo.value = "Durante";
 
   selectPeriodo.addEventListener("change", () => {
-    const selectedPeriod = selectPeriodo.value;
-    currentPeriod = selectedPeriod;
+    currentPeriod = selectPeriodo.value;
 
-    // Actualizar la capa de Zona Ríos
     if (zonaRiosFloods) {
-      iconoActivo = !iconoActivo;
-
-      if (iconoChange) {
-        iconoChange.className = iconoActivo
-          ? "bx bx-low-vision"
-          : "bx bx-low-vision";
-      }
-      isVisible = !isVisible;
       const layerZonaRios = `ZonaRios${currentPeriod}2020`;
       cargarZonaRios(layerZonaRios);
     }
+    //============================================================
+
+    iconoChange.className = "bx bx-show";
+
+    //============================================================
 
     if (areaName) {
-      layerName = `${areaName}${currentPeriod}2020`;
-      iconoActivo = !iconoActivo;
-
-      if (iconoChange && layerName) {
-        iconoChange.className = iconoActivo
-          ? "bx bx-low-vision"
-          : "bx bx-low-vision";
-      }
-      isVisible = !isVisible;
+      const layerName = `${areaName}${currentPeriod}2020`;
       cargarCapa(layerName);
     } else {
       console.warn("No hay un área seleccionada para actualizar la capa.");
