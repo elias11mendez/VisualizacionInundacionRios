@@ -33,6 +33,57 @@ L.control
   })
   .addTo(map);
 
+
+  const btnUbication = document.getElementById("btn-location");
+
+  if ("geolocation" in navigator) {
+  
+    btnUbication.addEventListener("click", () => {
+      console.log("clic");
+  
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+          
+          map.locate({ setView: true, maxZoom: 16 });
+  
+          function onLocationFound(event) {
+            var radius = event.accuracy;
+            L.marker(event.latlng)
+              .addTo(map)
+              .bindPopup("Estás a " + radius.toFixed(2) + " metros de esta ubicación.")
+              .openPopup();
+  
+            L.circle(event.latlng, radius).addTo(map);
+          }
+  
+          function onLocationError(event) {
+            alert("No se pudo obtener tu ubicación: " + event.message);
+          }
+  
+          map.off("locationfound", onLocationFound);
+          map.off("locationerror", onLocationError);
+  
+          map.on("locationfound", onLocationFound);
+          map.on("locationerror", onLocationError);
+        },
+        (error) => {
+          if (error.code === error.PERMISSION_DENIED) {
+            alert("Has denegado los permisos de ubicación. Para continuar, habilita los permisos en la configuración del navegador.");
+          } else {
+            alert("Error al obtener la ubicación: " + error.message);
+          }
+        }
+      );
+    });
+  } else {
+    alert("La geolocalización no está disponible en tu navegador.");
+  }
+  
+
+
+
 const cartoblack = L.tileLayer(
   "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
   {
@@ -45,7 +96,6 @@ const esriLayer = L.tileLayer(
   "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
   {
     attribution: '&copy; <a href="https://www.esri.com/">ESRI</a>',
-    maxZoom: 30,
   }
 );
 const openstreetmap = L.tileLayer(
@@ -66,7 +116,7 @@ const iconoChange = document.getElementById("icono-change");
 
 // Función para alternar visibilidad de capas
 function toggleLayerVisibility(layers, visibility) {
-  layers.forEach(layer => {
+  layers.forEach((layer) => {
     if (layer?.setOpacity) {
       layer.setOpacity(visibility);
     }
@@ -78,7 +128,13 @@ btnLayerView.addEventListener("click", () => {
   const newOpacity = isVisible ? 1 : 0;
   const newIconClass = isVisible ? "bx bx-show" : "bx bx-low-vision";
 
-  const layers = [zonaRiosAntes, zonaRiosDespues, zonaRiosDurante, zonaRiosFloods, municipioFloods];
+  const layers = [
+    zonaRiosAntes,
+    zonaRiosDespues,
+    zonaRiosDurante,
+    zonaRiosFloods,
+    municipioFloods,
+  ];
 
   toggleLayerVisibility(layers, newOpacity);
 
@@ -352,7 +408,7 @@ function capasMunicipio(lat, long, baseWMSUrl) {
     const allLayersMunicipio = document.getElementById("Checkbox-all");
 
     allLayersMunicipio.addEventListener("change", function () {
-      [zonaRiosAntes, zonaRiosDespues, zonaRiosDurante].forEach((layer) => {
+      [zonaRiosAntes, zonaRiosDurante, zonaRiosDespues].forEach((layer) => {
         if (layer && map.hasLayer(layer)) {
           map.removeLayer(layer);
         }
@@ -361,7 +417,11 @@ function capasMunicipio(lat, long, baseWMSUrl) {
       console.log("En municipios");
 
       if (allLayersMunicipio.checked) {
-        const capasMunicipios = ["Antes2020", "Durante2020", "Despues2020"];
+        const capasMunicipios = [
+          { name: "Antes2020", zIndex: 3 },
+          { name: "Durante2020", zIndex: 2 },
+          { name: "Despues2020", zIndex: 4 },
+        ];
 
         allMunicipiosLayers.forEach((layer) => {
           if (map.hasLayer(layer)) {
@@ -371,10 +431,10 @@ function capasMunicipio(lat, long, baseWMSUrl) {
 
         allMunicipiosLayers = [];
 
-        allMunicipiosLayers = capasMunicipios.map((capa) =>
+        allMunicipiosLayers = capasMunicipios.map(({ name, zIndex }) =>
           L.tileLayer
             .wms(baseWMSUrl, {
-              layers: `${selectedAreaName}${capa}`,
+              layers: `${selectedAreaName}${name}`,
               format: "image/png",
               transparent: true,
               version: "1.1.0",
@@ -382,7 +442,7 @@ function capasMunicipio(lat, long, baseWMSUrl) {
               formatoptions: "antialiasing:off",
               tileSize: 256,
               tiled: true,
-              zIndex: 3,
+              zIndex: zIndex,
             })
             .addTo(map)
         );
@@ -429,6 +489,7 @@ function capasMunicipio(lat, long, baseWMSUrl) {
     //============================================================
 
     iconoChange.className = "bx bx-show";
+    isVisible = zonaRiosFloods || municipioFloods;
 
     //============================================================
 

@@ -311,7 +311,7 @@ const leftTemporalConfig = {
   data: leftTemporalData,
 
   options: {
-    responsive: true,
+    responsive: false,
     scales: {
       y: {
         beginAtZero: true,
@@ -403,7 +403,7 @@ const rightTemporalConfig = {
   type: "line",
   data: rightTemporalData,
   options: {
-    responsive: true,
+    responsive: false,
     scales: {
       y: {
         beginAtZero: true,
@@ -475,10 +475,9 @@ function getCuerpoAguaIzquierda() {
   console.log(yearToUseLeft);
 
   if (yearToUseLeft) {
-    const loaderLeft = document.querySelector('.loader-container-left')
-    loaderLeft.style.display = 'none'
+    const loaderLeft = document.querySelector(".loader-container-left");
+    loaderLeft.style.display = "none";
   }
-  
 
   const seasonToUse = selectedSeasonLeft;
   // Filtrar los datos para el lado izquierdo
@@ -502,10 +501,10 @@ function getCuerpoAguaDerecha() {
   const seasonToUse = selectedSeasonRight;
   console.log("right ", yearToUseRight);
 
-if (yearToUseRight) {
-  const loaderRight = document.querySelector('.loader-container-right')
-  loaderRight.style.display = 'none'
-}
+  if (yearToUseRight) {
+    const loaderRight = document.querySelector(".loader-container-right");
+    loaderRight.style.display = "none";
+  }
 
   const filteredCuerpoAgua = output.filter(
     (item) =>
@@ -652,7 +651,25 @@ document.getElementById("activateSide").addEventListener("click", function () {
   toggleSideBySideControl();
   // Desactivar el boton End Clean
   disableBtnEndClean();
+  //Alterna entre leyenda inicio y leyenda comparador
+  legendLabel();
 });
+
+const legendComparador = document.querySelector(".legend-comparadora");
+const legendInicio = document.querySelector(".legend");
+
+function legendLabel() {
+  if (
+    legendInicio.style.display === "flex" ||
+    legendInicio.style.display === ""
+  ) {
+    legendInicio.style.display = "none";
+    legendComparador.style.display = "flex";
+  } else {
+    legendInicio.style.display = "flex";
+    legendComparador.style.display = "none";
+  }
+}
 
 let isDisabled = false;
 
@@ -718,8 +735,10 @@ function removeExistingLayers() {
   if (rightLayerTemporal) map.removeLayer(rightLayerTemporal);
   if (leftLayerPermanente) map.removeLayer(leftLayerPermanente);
   if (rightLayerPermanente) map.removeLayer(rightLayerPermanente);
-
-  // Remover las capas específicas
+  if (zonaRiosPermanent) {
+    map.removeLayer(zonaRiosPermanent);
+    checkboxPermanent.checked = false
+  }
   if (zonaRiosFloods) {
     map.removeLayer(zonaRiosFloods);
     zonaRiosFloods = null;
@@ -729,6 +748,19 @@ function removeExistingLayers() {
     map.removeLayer(municipioFloods);
     municipioFloods = null;
     console.log("Capa municipioFloods eliminada.");
+  }
+
+  allMunicipiosLayers.forEach((layer) => {
+    if (map.hasLayer(layer)) {
+      map.removeLayer(layer);
+    }
+  });
+  if (zonaRiosAntes) map.removeLayer(zonaRiosAntes);
+  if (zonaRiosDurante) map.removeLayer(zonaRiosDurante);
+  if (zonaRiosDespues) map.removeLayer(zonaRiosDespues);
+
+  if (municipioPermanent) {
+    map.removeLayer(municipioPermanent);
   }
 }
 
@@ -787,22 +819,24 @@ function toggleSideBySideControl() {
 //=--=0=-=-=-----------Graficasandlogicaofdeend----------------------------------------------------------------------
 let areaSeleccionada = null;
 let histogramaZonaRios = null;
-// Escuchar cambios en el municipio seleccionado
 window.addEventListener("estoenviaelcambiodelmunicipio", function (event) {
-  areaSeleccionada = event.detail; // Obtener el municipio seleccionado
+  areaSeleccionada = event.detail;
   console.log("Municipio que quiero:", areaSeleccionada);
+  console.log(areaName);
 
   document.getElementById("zona-selected").innerHTML = areaName;
   document.getElementById(
     "label-selected-area"
   ).innerHTML = `<span>${areaName} </span> `;
+  document.getElementById("zona-selected-down").innerHTML = areaName;
+  document.getElementById(
+    "label-selected-area"
+  ).innerHTML = `<span>${areaName} </span> `;
 
-  // Llamar a la función para actualizar la gráfica con el municipio seleccionado
   actualizarGrafica(areaSeleccionada);
 });
 console.log(currentPeriod);
 
-// Función para actualizar la gráfica según el municipio seleccionado
 function actualizarGrafica(municipio) {
   fetch("zonarios2020.json")
     .then((response) => response.json())
@@ -810,8 +844,22 @@ function actualizarGrafica(municipio) {
       const municipioData = datos.zonarios[municipio];
       const zonaRiosData = datos.zonarios;
       const kmMunicipio = municipioData.km;
+      const kmAffected = municipioData.Durante;
 
-      document.getElementById("label-periodo").innerHTML = `${kmMunicipio} km²`;
+      console.log("kmafectados", kmAffected);
+
+      console.log("Km afectados:", kmAffected);
+
+      let porcentajeAffected = (kmAffected / kmMunicipio) * 100;
+
+      document.getElementById(
+        "label-periodo"
+      ).innerHTML = ` ${kmMunicipio.toFixed(1)}km²`;
+      document.getElementById(
+        "label-selected-area-affected"
+      ).innerHTML = `${porcentajeAffected.toFixed(1)}%`;
+
+      console.log("Porcentaje afectado:", porcentajeAffected.toFixed(1));
 
       console.log(kmMunicipio);
 
@@ -821,7 +869,6 @@ function actualizarGrafica(municipio) {
       }
       console.log(zonaRiosData);
 
-      // Usar el municipio seleccionado como etiqueta
       const etiquetas = [municipio];
       const antes = [municipioData.Antes];
       const durante = [municipioData.Durante];
@@ -844,7 +891,6 @@ function actualizarGrafica(municipio) {
         zonaRiosData.EmilianoZapata.Durante,
         zonaRiosData.EmilianoZapata.Despues,
       ];
-      // Si la gráfica ya existe, actualiza los datos
       if (histogramaZonaRios) {
         histogramaZonaRios.data.labels = etiquetas;
         histogramaZonaRios.data.datasets[0].data = antes;
@@ -858,14 +904,14 @@ function actualizarGrafica(municipio) {
         const histogramaMunicipio = new Chart(ctxMunicipios, {
           type: "line",
           data: {
-            labels: etiquetasPeriodo, // Etiquetas de las categorías
+            labels: etiquetasPeriodo,
             datasets: [
               {
                 label: "Tenosique",
                 data: datosTenosique,
                 backgroundColor: "rgba(75, 192, 192, 0.2)",
                 borderColor: "rgba(75, 192, 192, 1)",
-                borderWidth: 1,
+                borderWidth: 0.5,
                 tension: 0.2,
               },
               {
@@ -873,7 +919,8 @@ function actualizarGrafica(municipio) {
                 data: datosBalancan,
                 backgroundColor: "rgba(255, 99, 132, 0.2)",
                 borderColor: "rgba(255, 99, 132, 1)",
-                borderWidth: 1,
+                borderWidth: 0.5,
+
                 tension: 0.2,
               },
               {
@@ -881,13 +928,15 @@ function actualizarGrafica(municipio) {
                 data: datosZapata,
                 backgroundColor: "rgba(54, 162, 235, 0.2)",
                 borderColor: "rgba(54, 162, 235, 1)",
-                borderWidth: 1,
+                borderWidth: 0.5,
                 tension: 0.2,
               },
             ],
           },
           options: {
-            responsive: true,
+            responsive: false,
+            maintainAspectRatio: false,
+            aspectRatio: 1,
             plugins: {
               legend: {
                 display: true,
@@ -895,18 +944,19 @@ function actualizarGrafica(municipio) {
                 labels: {
                   font: {
                     family: "'Montserrat', sans-serif",
+                    size: 16,
                   },
-                  color: "#000000", // Color de texto
+                  color: "#000000",
                 },
               },
               title: {
                 display: true,
                 font: {
                   family: "'Montserrat', sans-serif",
-                  size: 18,
+                  size: 2,
                   weight: "bold",
                 },
-                color: "#000000", // Color del título
+                color: "#000000",
                 padding: {
                   top: 10,
                   bottom: 20,
@@ -915,26 +965,30 @@ function actualizarGrafica(municipio) {
             },
             scales: {
               y: {
+                barPercentage: 0.5,
+                categoryPercentage: 0.8,
                 beginAtZero: true,
                 title: {
                   display: true,
                   text: "Área (KM²)",
                   font: {
                     family: "'Montserrat', sans-serif",
-                    size: 14,
+                    size: 16,
                     weight: "bold",
                   },
-                  color: "#000000", // Color del título del eje
+                  color: "#000000",
                 },
                 ticks: {
                   font: {
                     family: "'Montserrat', sans-serif",
-                    size: 12,
+                    size: 16,
                   },
-                  color: "#000000", // Color de las etiquetas del eje Y
+                  color: "#000000",
                 },
               },
               x: {
+                barPercentage: 0.5,
+                categoryPercentage: 0.8,
                 title: {
                   display: true,
                   text: "Comparacion municipal",
@@ -943,14 +997,14 @@ function actualizarGrafica(municipio) {
                     size: 16,
                     weight: "bold",
                   },
-                  color: "#000000", // Color del título del eje
+                  color: "#000000",
                 },
                 ticks: {
                   font: {
                     family: "'Montserrat', sans-serif",
-                    size: 12,
+                    size: 16,
                   },
-                  color: "#000000", // Color de las etiquetas del eje X
+                  color: "#000000",
                 },
               },
             },
@@ -963,6 +1017,7 @@ function actualizarGrafica(municipio) {
 
         histogramaZonaRios = new Chart(ctx, {
           type: "bar",
+
           data: {
             labels: etiquetas,
             datasets: [
@@ -990,7 +1045,11 @@ function actualizarGrafica(municipio) {
             ],
           },
           options: {
-            responsive: true,
+            responsive: false,
+            maintainAspectRatio: false,
+            aspectRatio: 1,
+            barPercentage: 0.5,
+            categoryPercentage: 0.8,
             plugins: {
               legend: {
                 display: true,
@@ -998,6 +1057,7 @@ function actualizarGrafica(municipio) {
                 labels: {
                   font: {
                     family: "'Montserrat', sans-serif",
+                    size: 16,
                   },
                   color: "#000000",
                 },
@@ -1006,7 +1066,7 @@ function actualizarGrafica(municipio) {
                 display: true,
                 color: "#000000",
                 font: {
-                  size: 16,
+                  size: 2,
                   family: "'Montserrat', sans-serif",
                   weight: "bold",
                 },
@@ -1014,6 +1074,8 @@ function actualizarGrafica(municipio) {
             },
             scales: {
               y: {
+                linePercentage: 0.5,
+                categoryPercentage: 0.8,
                 beginAtZero: true,
                 title: {
                   display: true,
@@ -1028,6 +1090,7 @@ function actualizarGrafica(municipio) {
                 ticks: {
                   font: {
                     family: "'Montserrat', sans-serif",
+                    size: 16,
                   },
                   color: "#000000",
                 },
@@ -1047,6 +1110,7 @@ function actualizarGrafica(municipio) {
                 ticks: {
                   font: {
                     family: "'Montserrat', sans-serif",
+                    size: 16,
                   },
                   color: "#000000",
                 },
@@ -1062,34 +1126,30 @@ function actualizarGrafica(municipio) {
 }
 actualizarGrafica("Zona Rios");
 
-//---------------------------------Controlado de modal informacio -----------------------
+//---------------------------------Controlador de modal informacio -----------------------
 
 const btnInfo = document.getElementById("info-side");
 const modalInfo = document.getElementById("modal-info");
 const closeBtn = document.querySelector(".close");
 const closeInfo = document.querySelector(".close-info");
 
-// Mostrar el modal cuando se hace clic en el botón
 btnInfo.addEventListener("click", () => {
-  modalInfo.style.display = "flex"; // Mostrar el modal
+  modalInfo.style.display = "flex";
   console.log("Modal mostrado");
 });
 
-// Cerrar el modal cuando se hace clic en el botón de cerrar (x)
 closeBtn.addEventListener("click", () => {
   modalInfo.style.display = "none";
   console.log("Modal cerrado");
 });
 
-// Cerrar modal al hacer clic en el botón de cerrar
 closeInfo.addEventListener("click", () => {
   modalInfo.style.display = "none";
 });
 
-// Cerrar el modal si se hace clic fuera del contenido del modal
 window.addEventListener("click", (event) => {
   if (event.target === modalInfo) {
-    modalInfo.style.display = "none"; // Ocultar el modal
+    modalInfo.style.display = "none";
     console.log("Modal cerrado");
   }
 });

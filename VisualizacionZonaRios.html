@@ -17,40 +17,85 @@
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
       rel="stylesheet"
     />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
   </head>
   <link rel="icon" href="/src/assets/academicos.ico" type="image/x-icon" />
   <body>
     <nav class="nav">
-      <div class="nav-title">
-        <h1>Sistema de Mapeo de la Zona de los Ríos de Tabasco</h1>
-      </div>
       <div class="nav-logos">
         <img src="/src/assets/academicos.ico" alt="logo-academicos" />
         <img
           src="https://sic.cultura.gob.mx/imagenes_cache/universidad_1874_g_10230.png"
           alt="logo-itsr"
         />
-        <img
-          src="https://scontent.fvsa2-1.fna.fbcdn.net/v/t39.30808-6/421599598_849229843878595_2835057821307286351_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeGEgJYA5am2zEnPvrT3fuyg0y8bi8Mx1MTTLxuLwzHUxHWMOHPuWBKkuvPFVZ0cfUR_tBU1-6IIlWHiucKqH8Fo&_nc_ohc=NMfwTCAEhn4Q7kNvgH4qlvK&_nc_zt=23&_nc_ht=scontent.fvsa2-1.fna&_nc_gid=AGdZU4WBsFwlvqRBOex9lOV&oh=00_AYBjM5L2URuoM2pKOIJsaHosoMPK0YLNh6gltEHpvTxWNw&oe=679ECEED"
-          alt="logo-tecnm"
-        />
+        <img src="/src/assets/logo-tecnm.png" alt="logo-tecnm" />
+      </div>
+
+      <div class="nav-title">
+        <h1>Sistema de Mapeo de la Zona de los Ríos de Tabasco</h1>
       </div>
     </nav>
 
     <div id="map"></div>
 
     <div class="btn-container">
-      <button class="btnSide" id="activateSide">
+      
+      <button class="btn-side" id="activateSide">
         <i class="bx bx-vertical-center" style="rotate: 90deg"></i>
       </button>
 
-      <button id="btn-endClean" class="btnSideInfo">
+      <button id="btn-endClean" class="btn-endClean">
         <i class="bx bx-crosshair"></i>
+      </button>
+
+      <button id="btn-option-maps" class="btn-layer">
+        <i class="bx bx-layer"></i>
+      </button>
+<!-- 
+      <button id="info-side" class="info-side">
+        <i class='bx bx-play-circle'></i>
+      </button>
+ -->
+      <button id="btn-location" class="info-side">
+        <i class='bx bx-target-lock' ></i>
       </button>
 
       <button id="info-side" class="info-side">
         <i class="bx bx-info-circle"></i>
       </button>
+
+    </div>
+  </div>
+
+    <div class="map-layer-container">
+      <div>
+        <img
+          id="btn-layer-satelite"
+          src="/src/assets/img-satelite.webp"
+          alt="img-satelite"
+        />
+        <label>Satélite</label>
+      </div>
+      <div>
+        <img
+          id="btn-layer-openstreetmap"
+          src="/src/assets/a.png"
+          alt="img-openstreetmap"
+        />
+        <label>OpenStreetMap</label>
+      </div>
+
+      <div>
+        <img
+          id="btn-layer-cartoblack"
+          src="/src/assets/map-cartoblack.png"
+          alt="img-cartodbblack"
+        />
+        <label>CartoBlack</label>
+      </div>
     </div>
 
     <div class="selector-container">
@@ -68,6 +113,7 @@
             <input
               type="checkbox"
               id="leftPermanentCheckbox"
+              6
               name="leftPermanentCheckbox"
               value="leftPermanentCheckbox"
               disabled
@@ -152,18 +198,21 @@
         <!-- Sección de ZonaRios y Municipio -->
         <div id="zonaRiosMunicipio" class="grafica-group">
           <div class="canvas-container">
-            <canvas
-              id="histogramaZonaRios"
-              width="200px"
-              height="200px"
-            ></canvas>
+            <canvas id="histogramaZonaRios" width="400" height="400"></canvas>
 
-            <canvas
-              id="histogramaMunicipio"
-              width="200px"
-              height="200px"
-            ></canvas>
+            <canvas id="histogramaMunicipio" width="400" height="400"></canvas>
           </div>
+          <!-- DATOS ADICIONANES DE BAJO DE LAS GRAFICAS-->
+          <div class="additional-data">
+            <span class="label-data">Zona Seleccionada: </span>
+            <span id="label-selected-area"> Zona Ríos</span>
+            <span class="label-data">Afectacion: </span>
+            <span id="label-selected-area-affected"></span>
+            <span>de territorio total </span>
+            <span class="label-data">Area geografica: </span>
+            <span id="label-periodo"> </span>
+          </div>
+          <!-- DATOS ADICIONANES DE BAJO DE LAS GRAFICAS-->
         </div>
 
         <!-- Sección de LeftTemporal y RightTemporal (inicialmente oculta) -->
@@ -171,8 +220,8 @@
           <div class="canvas-container">
             <canvas
               id="histogramaLeftTemporal"
-              width="200px"
-              height="200px"
+              width="400"
+              height="400"
             ></canvas>
 
             <div class="loader-container-right">
@@ -184,8 +233,8 @@
             </div>
             <canvas
               id="histogramaRightTemporal"
-              width="200px"
-              height="200px"
+              width="400"
+              height="400"
             ></canvas>
           </div>
           <button class="btn-graficas-anual" id="openModalBtn">
@@ -194,63 +243,81 @@
         </div>
       </div>
     </div>
-
+    <!---------------------------MODAL DE LAS GRAFICAS GENERALES----------------------------->
     <div id="myModal" class="modal">
       <div class="modal-content">
         <span class="close"><i class="bx bx-x"></i></span>
         <h2>Agua temporal anual</h2>
-        <canvas
-          id="histogramaThirdTemporal"
-          width="900px"
-          height="400px"
-        ></canvas>
+        <div class="grafica-groups">
+          <canvas
+            id="histogramaThirdTemporal"
+            width="900px"
+            height="400px"
+          ></canvas>
 
-        <h2>Agua permanente anual</h2>
-        <canvas
-          id="histogramaThirdPermanente"
-          width="900px"
-          height="400px"
-        ></canvas>
+          <h2>Agua permanente anual</h2>
+          <canvas
+            id="histogramaThirdPermanente"
+            width="900px"
+            height="400px"
+          ></canvas>
+        </div>
         <!-- <button onclick="updateThirdChart()">ver datos</button> -->
       </div>
     </div>
 
     <!-- CUADRO DE HISTOGRAMA -->
-    <div id="state-legend" class="legend">
+    <div class="legend">
       <div><span style="background-color: yellow"></span>Antes</div>
       <div><span style="background-color: red"></span>Durante</div>
       <div><span style="background-color: cyan"></span>Despues</div>
-      <div><span style="background-color: blue"></span>Cuerpos temporales</div>
+      <div><span style="background-color: blue"></span>Permanente</div>
     </div>
 
+    <div class="legend-comparadora">
+      <div><span style="background-color: black"></span>No data</div>
+      <div><span style="background-color: cyan"></span>Temporal</div>
+      <div><span style="background-color: blue"></span>Permanente</div>
+    </div>
+
+    <!--------------------------CONTROLADOR DE CAPAS DE INICIO----------------------------->
     <div class="select-inicio">
       <div class="checkbox-permanent">
-        <label>Agua Permanente </label>
-        <input
-          type="checkbox"
-          id="CheckboxPermanent"
-          name=""
-          value="CheckboxPermanent"
-        />
+        <div>
+          <label>Agua Permanente </label>
+          <input type="checkbox" id="Checkbox-Permanent" />
+        </div>
+
+        <div>
+          <label>Todas las capas</label>
+          <input type="checkbox" id="Checkbox-all" />
+        </div>
+        <div>
+          <button id="btn-layerView">
+            <i id="icono-change" class="bx bx-show"></i>
+          </button>
+        </div>
       </div>
 
       <div class="select-inicio-selected">
         <label for="">Periodo de capa: </label>
         <select class="custom-select-inicio" id="SelectPeriodo">
-          <option value="">Periodo</option>
+          <option value="" disabled selected>Permanente</option>
           <option value="Antes">Antes</option>
           <option value="Durante">Durante</option>
           <option value="Despues">Despues</option>
         </select>
 
-        <label for="">Zona seleccionada: </label>
-        <span id="zona-selected">Zona Ríos</span>
+        <div class="zona-selected">
+          <label for="">Zona seleccionada: </label>
+          <span id="zona-selected-down"> Zona Ríos</span>
+        </div>
       </div>
     </div>
-
+    <!--------------------------ETIQUETA DE LAS EL AREA SELECIONADA----------------------------->
     <div class="label-selected-area-container">
-      <span id="label-selected-area">Zona Ríos</span>
-      <span id="label-periodo">Durante</span>
+      <span id="zona-selected"> Zona Ríos</span>
+
       <span>2020</span>
     </div>
 
