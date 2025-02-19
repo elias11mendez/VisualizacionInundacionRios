@@ -21,7 +21,7 @@ let checkboxPermanent;
 let zonaRiosPermanent = null;
 let municipioPermanent = null;
 let map = L.map("map").setView([lat, long], initialZoom);
-let baseWMSUrl = "http://localhost:8080/geoserver/zonarios/wms";
+let baseWMSUrl = "http://geoserver.computodistribuido.org/geoserver/zonarios/wms";
 
 L.control
   .scale({
@@ -33,56 +33,55 @@ L.control
   })
   .addTo(map);
 
+const btnUbication = document.getElementById("btn-location");
 
-  const btnUbication = document.getElementById("btn-location");
+if ("geolocation" in navigator) {
+  btnUbication.addEventListener("click", () => {
+    console.log("clic");
 
-  if ("geolocation" in navigator) {
-  
-    btnUbication.addEventListener("click", () => {
-      console.log("clic");
-  
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const latitude = position.coords.latitude;
-          const longitude = position.coords.longitude;
-          
-          map.locate({ setView: true, maxZoom: 16 });
-  
-          function onLocationFound(event) {
-            var radius = event.accuracy;
-            L.marker(event.latlng)
-              .addTo(map)
-              .bindPopup("Estás a " + radius.toFixed(2) + " metros de esta ubicación.")
-              .openPopup();
-  
-            L.circle(event.latlng, radius).addTo(map);
-          }
-  
-          function onLocationError(event) {
-            alert("No se pudo obtener tu ubicación: " + event.message);
-          }
-  
-          map.off("locationfound", onLocationFound);
-          map.off("locationerror", onLocationError);
-  
-          map.on("locationfound", onLocationFound);
-          map.on("locationerror", onLocationError);
-        },
-        (error) => {
-          if (error.code === error.PERMISSION_DENIED) {
-            alert("Has denegado los permisos de ubicación. Para continuar, habilita los permisos en la configuración del navegador.");
-          } else {
-            alert("Error al obtener la ubicación: " + error.message);
-          }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        map.locate({ setView: true, maxZoom: 16 });
+
+        function onLocationFound(event) {
+          var radius = event.accuracy;
+          L.marker(event.latlng)
+            .addTo(map)
+            .bindPopup(
+              "Estás a " + radius.toFixed(2) + " metros de esta ubicación."
+            )
+            .openPopup();
+
+          L.circle(event.latlng, radius).addTo(map);
         }
-      );
-    });
-  } else {
-    alert("La geolocalización no está disponible en tu navegador.");
-  }
-  
 
+        function onLocationError(event) {
+          alert("No se pudo obtener tu ubicación: " + event.message);
+        }
 
+        map.off("locationfound", onLocationFound);
+        map.off("locationerror", onLocationError);
+
+        map.on("locationfound", onLocationFound);
+        map.on("locationerror", onLocationError);
+      },
+      (error) => {
+        if (error.code === error.PERMISSION_DENIED) {
+          alert(
+            "Has denegado los permisos de ubicación. Para continuar, habilita los permisos en la configuración del navegador."
+          );
+        } else {
+          alert("Error al obtener la ubicación: " + error.message);
+        }
+      }
+    );
+  });
+} else {
+  alert("La geolocalización no está disponible en tu navegador.");
+}
 
 const cartoblack = L.tileLayer(
   "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
@@ -134,6 +133,9 @@ btnLayerView.addEventListener("click", () => {
     zonaRiosDurante,
     zonaRiosFloods,
     municipioFloods,
+    allMunicipiosLayers[0],
+    allMunicipiosLayers[1],
+    allMunicipiosLayers[2],
   ];
 
   toggleLayerVisibility(layers, newOpacity);
