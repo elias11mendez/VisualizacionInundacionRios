@@ -21,7 +21,8 @@ let checkboxPermanent;
 let zonaRiosPermanent = null;
 let municipioPermanent = null;
 let map = L.map("map").setView([lat, long], initialZoom);
-let baseWMSUrl = "http://geoserver.computodistribuido.org/geoserver/zonarios/wms";
+let coords = L.CRS.EPSG3857
+let baseWMSUrl = "https://geoserver.computodistribuido.org/geoserver/zonarios/wms?=service";
 
 L.control
   .scale({
@@ -37,7 +38,6 @@ const btnUbication = document.getElementById("btn-location");
 
 if ("geolocation" in navigator) {
   btnUbication.addEventListener("click", () => {
-    console.log("clic");
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -105,7 +105,6 @@ const openstreetmap = L.tileLayer(
   }
 );
 
-console.log(zIndexView);
 let allMunicipiosLayers = [];
 
 let isVisible = true;
@@ -143,7 +142,6 @@ btnLayerView.addEventListener("click", () => {
 
   if (iconoChange) iconoChange.className = newIconClass;
 
-  console.log(isVisible ? "Capas visibles" : "Capas ocultas");
 });
 
 const optionMaps = document.querySelector(".map-layer-container");
@@ -200,17 +198,14 @@ function setActiveLayer(activeLayerKey, labelColor) {
 }
 
 btnLayerSatelite.addEventListener("click", () => {
-  console.log("Cambiando a capa Satélite");
   setActiveLayer("esri", "white");
 });
 
 btnLayerOpenstreet.addEventListener("click", () => {
-  console.log("Cambiando a capa OpenStreetMap");
   setActiveLayer("openstreet", "#333");
 });
 
 btnLayerCartoblack.addEventListener("click", () => {
-  console.log("Cambiando a capa CartoBlack");
   setActiveLayer("cartoBlack", "#888");
 });
 
@@ -225,7 +220,7 @@ function allLayersZonaRios() {
         format: "image/png",
         transparent: true,
         version: "1.1.0",
-        crs: L.CRS.EPSG3857,
+        crs: coords,
         formatoptions: "antialiasing:off",
         tileSize: 256,
         tiled: true,
@@ -239,7 +234,7 @@ function allLayersZonaRios() {
         format: "image/png",
         transparent: true,
         version: "1.1.0",
-        crs: L.CRS.EPSG3857,
+        crs: coords,
         formatoptions: "antialiasing:off",
         tileSize: 256,
         tiled: true,
@@ -253,7 +248,7 @@ function allLayersZonaRios() {
         format: "image/png",
         transparent: true,
         version: "1.1.0",
-        crs: L.CRS.EPSG3857,
+        crs: coords,
         formatoptions: "antialiasing:off",
         tileSize: 256,
         tiled: true,
@@ -293,7 +288,7 @@ checkboxPermanent.addEventListener("change", function () {
         format: "image/png",
         transparent: true,
         version: "1.1.0",
-        crs: L.CRS.EPSG3857,
+        crs: coords,
         formatoptions: "antialiasing:off",
         tileSize: 256,
         tiled: true,
@@ -310,11 +305,8 @@ checkboxPermanent.addEventListener("change", function () {
 
 if (currentPeriod) {
   iconoChange.className = "bx bx-show";
-  console.log(currentPeriod);
-  console.log("caso verdaro");
 } else {
   iconoChange.className = "bx bx-show";
-  console.log("caso contrario");
 }
 if (currentPeriod) {
   iconoChange.className = "bx bx-show";
@@ -349,7 +341,7 @@ function capasMunicipio(lat, long, baseWMSUrl) {
         format: "image/png",
         transparent: true,
         version: "1.1.0",
-        crs: L.CRS.EPSG3857,
+        crs: coords,
         formatoptions: "antialiasing:off",
         tileSize: 256,
         tiled: true,
@@ -390,7 +382,7 @@ function capasMunicipio(lat, long, baseWMSUrl) {
             format: "image/png",
             transparent: true,
             version: "1.1.0",
-            crs: L.CRS.EPSG3857,
+            crs: coords,
             formatoptions: "antialiasing:off",
             tileSize: 256,
             tiled: true,
@@ -403,7 +395,6 @@ function capasMunicipio(lat, long, baseWMSUrl) {
         }
       }
 
-      console.log(municipioPermanent);
     });
 
     checkboxAllLayer.checked = false;
@@ -417,7 +408,6 @@ function capasMunicipio(lat, long, baseWMSUrl) {
         }
       });
 
-      console.log("En municipios");
 
       if (allLayersMunicipio.checked) {
         const capasMunicipios = [
@@ -441,7 +431,7 @@ function capasMunicipio(lat, long, baseWMSUrl) {
               format: "image/png",
               transparent: true,
               version: "1.1.0",
-              crs: L.CRS.EPSG3857,
+              crs: coords,
               formatoptions: "antialiasing:off",
               tileSize: 256,
               tiled: true,
@@ -450,7 +440,6 @@ function capasMunicipio(lat, long, baseWMSUrl) {
             .addTo(map)
         );
 
-        console.log("Capas agregadas:", allMunicipiosLayers);
       } else {
         allMunicipiosLayers.forEach((layer) => {
           if (map.hasLayer(layer)) {
@@ -460,7 +449,6 @@ function capasMunicipio(lat, long, baseWMSUrl) {
 
         allMunicipiosLayers = [];
 
-        console.log("Capas eliminadas");
       }
     });
 
@@ -470,7 +458,7 @@ function capasMunicipio(lat, long, baseWMSUrl) {
         format: "image/png",
         transparent: true,
         version: "1.1.0",
-        crs: L.CRS.EPSG3857,
+        crs: coords,
         formatoptions: "antialiasing:off",
         tileSize: 256,
         tiled: true,
@@ -603,6 +591,8 @@ function capasMunicipio(lat, long, baseWMSUrl) {
         if (rightLayerPermanente) map.removeLayer(rightLayerPermanente);
         if (rightLayerTemporal) map.removeLayer(rightLayerTemporal);
 
+        if (municipioPermanent) map.removeLayer(municipioPermanent)
+
         if (sideBySideControl) {
           map.removeControl(sideBySideControl);
           sideBySideControl = null;
@@ -643,7 +633,7 @@ function capasMunicipio(lat, long, baseWMSUrl) {
             format: "image/png",
             transparent: true,
             version: "1.1.0",
-            crs: L.CRS.EPSG3857,
+            crs: coords,
             formatoptions: "antialiasing:off",
             tileSize: 256,
             tiled: true,
@@ -704,7 +694,7 @@ function updateLayer(year, season, side, isPermanente = true) {
         format: "image/png",
         transparent: true,
         version: "1.1.0",
-        crs: L.CRS.EPSG3857,
+        crs: L.CRS.EPSG4326,
         formatoptions: "antialiasing:off",
         tileSize: 256,
         tiled: true,
@@ -717,7 +707,7 @@ function updateLayer(year, season, side, isPermanente = true) {
         format: "image/png",
         transparent: true,
         version: "1.1.0",
-        crs: L.CRS.EPSG3857,
+        crs: L.CRS.EPSG4326,
         formatoptions: "antialiasing:off",
         tileSize: 256,
         tiled: true,
@@ -739,21 +729,20 @@ function updateLayer(year, season, side, isPermanente = true) {
         format: "image/png",
         transparent: true,
         version: "1.1.0",
-        crs: L.CRS.EPSG3857,
+        crs: L.CRS.EPSG4326,
         formatoptions: "antialiasing:off",
         tileSize: 256,
         tiled: true,
         zIndex: zIndexView,
       });
       rightLayerPermanente.addTo(map);
-      console.log(rightLayerPermanente);
     } else {
       rightLayerTemporal = L.tileLayer.wms(baseWMSUrl, {
         layers: layerName,
         format: "image/png",
         transparent: true,
         version: "1.1.0",
-        crs: L.CRS.EPSG3857,
+        crs: L.CRS.EPSG4326,
         formatoptions: "antialiasing:off",
         tileSize: 256,
         tiled: true,
@@ -847,7 +836,6 @@ function activateSideBySide() {
     .addTo(map);
 
   document.querySelector(".selector-container").style.display = "flex";
-  console.log("Comparador lado a lado activado.");
 }
 
 const checkboxes = document.querySelectorAll('input[type="checkbox"]');

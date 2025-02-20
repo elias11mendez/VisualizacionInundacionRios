@@ -43,7 +43,6 @@ function loadFile(url) {
       const text = decoder.decode(buffer);
       const lines = parseCSV(text);
       output = mapDataToObjects(lines);
-      console.log("Datos cargados:", output);
     })
     .catch((error) => {
       console.error("Error al cargar el archivo:", error);
@@ -66,9 +65,8 @@ openModalBtn.addEventListener("click", () => {
 });
 
 if (chartInstanceLeft == null) {
-  console.log("cargando datos");
 } else {
-  console.log("datos cargados correctamente");
+  console.info("Los datos se han cargado correctamente");
 }
 
 // Cerrar modal al hacer clic en el botón de cerrar
@@ -196,7 +194,6 @@ function updateThirdChart() {
   const filteredTemporal2020 = output.filter(
     (item) => item.Año === "2020" && item.Tipo_Agua === "Temporal"
   );
-  console.log("sdasdasdas", output);
 
   const filteredTemporal2021 = output.filter(
     (item) => item.Año === "2021" && item.Tipo_Agua === "Temporal"
@@ -233,16 +230,15 @@ function updateThirdChart() {
   const areasPermanente2020 = filteredPermanente2020.map((item) =>
     parseFloat(item.Area_km2)
   );
-  console.log(areasTemporal2020, "asdasd");
 
   const areasPermanente2021 = filteredPermanente2021.map((item) =>
     parseFloat(item.Area_km2)
   );
-
+/* 
   console.log("Areas Temporal 2021: ", areasPermanente2019);
 
   console.log("Areas Temporal 2020: ", areasPermanente2020);
-  console.log("Areas Temporal 2021: ", areasPermanente2021);
+  console.log("Areas Temporal 2021: ", areasPermanente2021); */
 
   if (areasTemporal2020.length === 0 || areasTemporal2021.length === 0) {
     console.error("No data available for the selected years");
@@ -472,7 +468,6 @@ const rightTemporalConfig = {
 let cuerpoAguaIzquierda = null;
 function getCuerpoAguaIzquierda() {
   const yearToUseLeft = selectedYearLeft;
-  console.log(yearToUseLeft);
 
   if (yearToUseLeft) {
     const loaderLeft = document.querySelector(".loader-container-left");
@@ -491,7 +486,6 @@ function getCuerpoAguaIzquierda() {
   cuerpoAguaIzquierda = filteredCuerpoAgua.map((item) =>
     parseFloat(item.Numero_de_cuerpos_de_agua)
   );
-  console.log(yearToUseLeft, seasonToUse, cuerpoAguaIzquierda);
   return cuerpoAguaIzquierda; // Retorna el cuerpo de agua para el lado izquierdo
 }
 
@@ -499,7 +493,6 @@ let cuerpoAguaDerecha = null;
 function getCuerpoAguaDerecha() {
   const yearToUseRight = selectedYearRight;
   const seasonToUse = selectedSeasonRight;
-  console.log("right ", yearToUseRight);
 
   if (yearToUseRight) {
     const loaderRight = document.querySelector(".loader-container-right");
@@ -517,7 +510,6 @@ function getCuerpoAguaDerecha() {
     parseFloat(item.Numero_de_cuerpos_de_agua)
   );
 
-  console.log(yearToUseRight, seasonToUse, cuerpoAguaDerecha);
   return cuerpoAguaDerecha; // Retorna el cuerpo de agua para el lado derecho
 }
 
@@ -614,7 +606,6 @@ document
 function toggleSidebar() {
   const sidebar = document.getElementById("sidebar");
   const histogramaArrow = document.getElementById("histogramaArrow");
-  console.log("haciendo clic");
 
   histogramaArrow.classList.toggle("moved");
 
@@ -722,12 +713,11 @@ function disableLayerClicks() {
     layer.off("click");
     layer.setStyle({ pointerEvents: "none" });
   });
-  console.log("Deshabilitar clics en capas.");
 }
 
 function resetMapView() {
   map.setView([lat, long], initialZoom);
-  console.log("Restableciendo vista del mapa.");
+  console.warn("Restableciendo vista del mapa.");
 }
 
 function removeExistingLayers() {
@@ -737,17 +727,15 @@ function removeExistingLayers() {
   if (rightLayerPermanente) map.removeLayer(rightLayerPermanente);
   if (zonaRiosPermanent) {
     map.removeLayer(zonaRiosPermanent);
-    checkboxPermanent.checked = false
+    checkboxPermanent.checked = false;
   }
   if (zonaRiosFloods) {
     map.removeLayer(zonaRiosFloods);
     zonaRiosFloods = null;
-    console.log("Capa zonaRiosFloods eliminada.");
   }
   if (municipioFloods) {
     map.removeLayer(municipioFloods);
     municipioFloods = null;
-    console.log("Capa municipioFloods eliminada.");
   }
 
   allMunicipiosLayers.forEach((layer) => {
@@ -772,14 +760,12 @@ function deselectArea() {
       fillOpacity: 0.1,
     });
     selectedLayer = null;
-    console.log("Selección de área eliminada.");
   }
 }
 
 function clearAreaName() {
   areaName = null;
   document.getElementById("zona-selected").innerHTML = "Zona Rios";
-  console.log("Nombre del área limpiado.");
 }
 
 function toggleUIElements() {
@@ -808,11 +794,9 @@ function toggleSideBySideControl() {
   if (sideBySideControl === null) {
     if (leftLayerTemporal && rightLayerTemporal) {
       activateSideBySide();
-      console.log("Comparador activado.");
     }
   } else {
     deactivateSideBySide();
-    console.log("Comparador desactivado.");
   }
 }
 
@@ -821,8 +805,7 @@ let areaSeleccionada = null;
 let histogramaZonaRios = null;
 window.addEventListener("estoenviaelcambiodelmunicipio", function (event) {
   areaSeleccionada = event.detail;
-  console.log("Municipio que quiero:", areaSeleccionada);
-  console.log(areaName);
+
 
   document.getElementById("zona-selected").innerHTML = areaName;
   document.getElementById(
@@ -835,7 +818,6 @@ window.addEventListener("estoenviaelcambiodelmunicipio", function (event) {
 
   actualizarGrafica(areaSeleccionada);
 });
-console.log(currentPeriod);
 
 function actualizarGrafica(municipio) {
   fetch("zonarios2020.json")
@@ -846,9 +828,7 @@ function actualizarGrafica(municipio) {
       const kmMunicipio = municipioData.km;
       const kmAffected = municipioData.Durante;
 
-      console.log("kmafectados", kmAffected);
-
-      console.log("Km afectados:", kmAffected);
+     
 
       let porcentajeAffected = (kmAffected / kmMunicipio) * 100;
 
@@ -859,15 +839,12 @@ function actualizarGrafica(municipio) {
         "label-selected-area-affected"
       ).innerHTML = `${porcentajeAffected.toFixed(1)}%`;
 
-      console.log("Porcentaje afectado:", porcentajeAffected.toFixed(1));
-
-      console.log(kmMunicipio);
+     
 
       if (!municipioData) {
         console.warn(`Datos no encontrados para el municipio: ${municipio}`);
         return;
       }
-      console.log(zonaRiosData);
 
       const etiquetas = [municipio];
       const antes = [municipioData.Antes];
@@ -1135,12 +1112,10 @@ const closeInfo = document.querySelector(".close-info");
 
 btnInfo.addEventListener("click", () => {
   modalInfo.style.display = "flex";
-  console.log("Modal mostrado");
 });
 
 closeBtn.addEventListener("click", () => {
   modalInfo.style.display = "none";
-  console.log("Modal cerrado");
 });
 
 closeInfo.addEventListener("click", () => {
@@ -1150,6 +1125,5 @@ closeInfo.addEventListener("click", () => {
 window.addEventListener("click", (event) => {
   if (event.target === modalInfo) {
     modalInfo.style.display = "none";
-    console.log("Modal cerrado");
   }
 });
