@@ -100,7 +100,7 @@
   padding: 7px;
   margin: 5px 0;
   cursor: pointer;
-  border-radius: 1px;
+  border-radius: var(--radiusUno);
 }
 .btn-layer:hover i,
 .btn-endClean:hover i,
