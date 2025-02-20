@@ -113,6 +113,7 @@ let isVisible = true;
 const btnLayerView = document.getElementById("btn-layerView");
 const iconoChange = document.getElementById("icono-change");
 
+
 // Función para alternar visibilidad de capas
 function toggleLayerVisibility(layers, visibility) {
   layers.forEach((layer) => {

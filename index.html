@@ -3,78 +3,373 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Visualizacion Rios - Cuerpo academico computo distribuido</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/src/code/leaflet-side-by-side.js"></script>
+    <link rel="stylesheet" href="/src/styles/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="control.layers.minimap.css" />
-    <script src="L.Control.Layers.Minimap.js"></script>
     <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
       rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-      crossorigin=""
     />
-
-    <script
-      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-      crossorigin=""
-    ></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <link rel="icon" href="/src/assets/ico.png" type="image/x-icon" />
-
-    <link rel="stylesheet" href="/src/styles/styles.css" />
-    <title>Visualizacion de zonas inundadas Tabasco</title>
-    <script src="/src/code/leaflet-side-by-side.js"></script>
   </head>
+  <link rel="icon" href="/src/assets/academicos.ico" type="image/x-icon" />
   <body>
-    <button class="btnSide" id="compare-button">
-      <i class="bx bx-vertical-center"></i>
-    </button>
+    <nav class="nav">
+      <div class="nav-logos">
+        <img src="/src/assets/academicos.ico" alt="logo-academicos" />
+        <img
+          src="https://sic.cultura.gob.mx/imagenes_cache/universidad_1874_g_10230.png"
+          alt="logo-itsr"
+        />
+        <img src="/src/assets/logo-tecnm.png" alt="logo-tecnm" />
+      </div>
+
+      <div class="nav-title">
+        <h1>Sistema de Mapeo de la Zona de los Ríos de Tabasco</h1>
+      </div>
+    </nav>
 
     <div id="map"></div>
-    <div class="selector-container" >
+
+    <div class="btn-container">
+      
+      <button class="btn-side" id="activateSide">
+        <i class="bx bx-vertical-center" style="rotate: 90deg"></i>
+      </button>
+
+      <button id="btn-endClean" class="btn-endClean">
+        <i class="bx bx-crosshair"></i>
+      </button>
+
+      <button id="btn-option-maps" class="btn-layer">
+        <i class="bx bx-layer"></i>
+      </button>
+<!-- 
+      <button id="info-side" class="info-side">
+        <i class='bx bx-play-circle'></i>
+      </button>
+ -->
+      <button id="btn-location" class="info-side">
+        <i class='bx bx-target-lock' ></i>
+      </button>
+
+      <button id="info-side" class="info-side">
+        <i class="bx bx-info-circle"></i>
+      </button>
+
+    </div>
+  </div>
+
+    <div class="map-layer-container">
       <div>
-        <select id="leftYearSelector" class="layer-selector">
-          <option value="">Ano</option>
-          <option value="2021">2021</option>
-          <option value="2022">2022</option>
-          <option value="2023">2023</option>
-        </select>
-
-        <select id="leftSeasonSelector" class="layer-selector">
-          <option value="">Temporada</option>
-
-          <option value="Invierno">Invierno</option>
-          <option value="Primavera">Primavera</option>
-          <option value="Verano">Verano</option>
-          <option value="Otono">Otoño</option>
-        </select>
-
-        <select id="rightYearSelector" class="layer-selector">
-          <option value="">Ano</option>
-
-          <option value="2021">2021</option>
-          <option value="2022">2022</option>
-          <option value="2023">2023</option>
-        </select>
-
-        <select id="rightSeasonSelector" class="layer-selector">
-          <option value="">Temporada</option>
-
-          <option value="Invierno">Invierno</option>
-          <option value="Primavera">Primavera</option>
-          <option value="Verano">Verano</option>
-          <option value="Otono">Otoño</option>
-        </select>
+        <img
+          id="btn-layer-satelite"
+          src="/src/assets/img-satelite.webp"
+          alt="img-satelite"
+        />
+        <label>Satélite</label>
       </div>
-    </div> 
+      <div>
+        <img
+          id="btn-layer-openstreetmap"
+          src="/src/assets/a.png"
+          alt="img-openstreetmap"
+        />
+        <label>OpenStreetMap</label>
+      </div>
 
+      <div>
+        <img
+          id="btn-layer-cartoblack"
+          src="/src/assets/map-cartoblack.png"
+          alt="img-cartodbblack"
+        />
+        <label>CartoBlack</label>
+      </div>
+    </div>
 
+    <div class="selector-container">
+      <!-- CAPA IZQUIERDA -->
+      <div class="layerControl">
+        <div class="checkbox-container">
+          <!--   <div class="checkbox-temporal">
+            <label>Agua Temporal</label>
+            <input type="checkbox" checked disabled />
+          </div> -->
+          <!-- CAPA IZQUIERDA Checkbox -->
 
+          <div>
+            <label>Agua Permanente </label>
+            <input
+              type="checkbox"
+              id="leftPermanentCheckbox"
+              6
+              name="leftPermanentCheckbox"
+              value="leftPermanentCheckbox"
+              disabled
+            />
+          </div>
+        </div>
+        <hr />
+        <div class="checkbox-container">
+          <!--     <div class="checkbox-temporal">
+            <label>Agua Temporal</label>
+            <input type="checkbox" checked disabled />
+          </div> -->
+          <!-- Capa derecha checkbox -->
+          <div>
+            <label>Agua Permanente </label>
+            <input
+              type="checkbox"
+              id="rightPermanentCheckbox"
+              name="rightPermanentCheckbox"
+              value="rightPermanentCheckbox"
+              disabled
+            />
+          </div>
+        </div>
+      </div>
+      <div class="movil-selector">
+        <div>
+          <label class="selector-label" for="leftYearSelector"
+            >Capa Izquierda:</label
+          >
+          <select id="leftYearSelector" class="layer-selector-temporada">
+            <option value="">Año</option>
+            <option value="2019">2019</option>
+            <option value="2020">2020</option>
+            <option value="2021">2021</option>
+          </select>
+          <select id="leftSeasonSelector" class="layer-selector-temporada">
+            <option value="">Temporada</option>
+            <option value="primavera">Primavera</option>
+            <option value="verano">Verano</option>
+            <option value="otono">Otoño</option>
+            <option value="invierno">Invierno</option>
+          </select>
+        </div>
 
-    <script src="/src/code/script.js"></script>
+        <!-- CAPA DERECHA -->
+        <div>
+          <label class="selector-label" for="rightYearSelector"
+            >Capa Derecha:</label
+          >
+          <select id="rightYearSelector" class="layer-selector-temporada">
+            <option value="">Año</option>
+            <option value="2019">2019</option>
+            <option value="2020">2020</option>
+            <option value="2021">2021</option>
+          </select>
+          <select id="rightSeasonSelector" class="layer-selector-temporada">
+            <option value="">Temporada</option>
+            <option value="primavera">Primavera</option>
+            <option value="verano">Verano</option>
+            <option value="otono">Otoño</option>
+            <option value="invierno">Invierno</option>
+          </select>
+        </div>
+      </div>
+      <!--       <span class="loader-layer" id="loader-layer"></span>
+ -->
+    </div>
+
+    <!-- CUADRO DE HISTOGRAMA -->
+    <div class="histogramaArrow" id="histogramaArrow" onclick="toggleSidebar()">
+      <i class="bx bxs-chevron-left"></i>
+    </div>
+    <div class="sidebar" id="sidebar">
+      <!-- Título y botón para abrir el modal -->
+      <div class="sidebar-indice">
+        <p>Histograma de inundaciones</p>
+      </div>
+
+      <!-- Contenedor de histogramas -->
+      <div class="histogramas-container">
+        <!-- Sección de ZonaRios y Municipio -->
+        <div id="zonaRiosMunicipio" class="grafica-group">
+          <div class="canvas-container">
+            <canvas id="histogramaZonaRios" width="400" height="400"></canvas>
+
+            <canvas id="histogramaMunicipio" width="400" height="400"></canvas>
+          </div>
+          <!-- DATOS ADICIONANES DE BAJO DE LAS GRAFICAS-->
+          <div class="additional-data">
+            <span class="label-data">Zona Seleccionada: </span>
+            <span id="label-selected-area"> Zona Ríos</span>
+            <span class="label-data">Afectacion: </span>
+            <span id="label-selected-area-affected"></span>
+            <span>de territorio total </span>
+            <span class="label-data">Area geografica: </span>
+            <span id="label-periodo"> </span>
+          </div>
+          <!-- DATOS ADICIONANES DE BAJO DE LAS GRAFICAS-->
+        </div>
+
+        <!-- Sección de LeftTemporal y RightTemporal (inicialmente oculta) -->
+        <div id="temporal" class="grafica-group" style="display: none">
+          <div class="canvas-container">
+            <canvas
+              id="histogramaLeftTemporal"
+              width="400"
+              height="400"
+            ></canvas>
+
+            <div class="loader-container-right">
+              <span id="loader" class="loader-right"></span>
+            </div>
+
+            <div class="loader-container-left">
+              <span class="loader-left"></span>
+            </div>
+            <canvas
+              id="histogramaRightTemporal"
+              width="400"
+              height="400"
+            ></canvas>
+          </div>
+          <button class="btn-graficas-anual" id="openModalBtn">
+            Ver histograma Anual <i class="bx bx-scatter-chart"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!---------------------------MODAL DE LAS GRAFICAS GENERALES----------------------------->
+    <div id="myModal" class="modal">
+      <div class="modal-content">
+        <span class="close"><i class="bx bx-x"></i></span>
+        <h2>Agua temporal anual</h2>
+        <div class="grafica-groups">
+          <canvas
+            id="histogramaThirdTemporal"
+            width="900px"
+            height="400px"
+          ></canvas>
+
+          <h2>Agua permanente anual</h2>
+          <canvas
+            id="histogramaThirdPermanente"
+            width="900px"
+            height="400px"
+          ></canvas>
+        </div>
+        <!-- <button onclick="updateThirdChart()">ver datos</button> -->
+      </div>
+    </div>
+
+    <!-- CUADRO DE HISTOGRAMA -->
+    <div class="legend">
+      <div><span style="background-color: yellow"></span>Antes</div>
+      <div><span style="background-color: red"></span>Durante</div>
+      <div><span style="background-color: cyan"></span>Despues</div>
+      <div><span style="background-color: blue"></span>Permanente</div>
+    </div>
+
+    <div class="legend-comparadora">
+      <div><span style="background-color: black"></span>No data</div>
+      <div><span style="background-color: cyan"></span>Temporal</div>
+      <div><span style="background-color: blue"></span>Permanente</div>
+    </div>
+
+    <!--------------------------CONTROLADOR DE CAPAS DE INICIO----------------------------->
+    <div class="select-inicio">
+      <div class="checkbox-permanent">
+        <div>
+          <label>Agua Permanente </label>
+          <input type="checkbox" id="Checkbox-Permanent" />
+        </div>
+
+        <div>
+          <label>Todas las capas</label>
+          <input type="checkbox" id="Checkbox-all" />
+        </div>
+        <div>
+          <button id="btn-layerView">
+            <i id="icono-change" class="bx bx-show"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="select-inicio-selected">
+        <label for="">Periodo de capa: </label>
+        <select class="custom-select-inicio" id="SelectPeriodo">
+          <option value="" disabled selected>Permanente</option>
+          <option value="Antes">Antes</option>
+          <option value="Durante">Durante</option>
+          <option value="Despues">Despues</option>
+        </select>
+
+        <div class="zona-selected">
+          <label for="">Zona seleccionada: </label>
+          <span id="zona-selected-down"> Zona Ríos</span>
+        </div>
+      </div>
+    </div>
+    <!--------------------------ETIQUETA DE LAS EL AREA SELECIONADA----------------------------->
+    <div class="label-selected-area-container">
+      <span id="zona-selected"> Zona Ríos</span>
+
+      <span>2020</span>
+    </div>
+
+    <div id="modal-info" class="modal-info">
+      <div class="modal-content-info">
+        <span class="close-info"><i class="bx bx-x"></i></span>
+        <div class="info-container">
+          <span>
+            <i class="bx bx-vertical-center"></i>
+            <p>Comparador entre capas.</p>
+          </span>
+
+          <span>
+            <i class="bx bx-crosshair"></i>
+            <p>Visualización regional.</p>
+          </span>
+
+          <span>
+            <i class="bx bx-info-circle"></i>
+            <p>Guia rápida de la plataforma.</p>
+          </span>
+
+          <span>
+            <div class="zoom-container">
+              <div><i class="bx bx-plus"></i></div>
+              <div><i class="bx bx-minus"></i></div>
+            </div>
+
+            <p>Controlador de zoom.</p>
+          </span>
+
+          <span class="span-seleccion-capa">
+            <img src="/src/assets/seleccioncapas.png" alt="seleccioncapas" />
+            <p>Seleccionador las capas a mostrar y comparar.</p>
+          </span>
+
+          <span class="span-seleccion-capa">
+            <img src="/src/assets/image.png" alt="seleccionperiodo" />
+            <p>Seleccionador de período a mostrar.</p>
+          </span>
+          <span>
+            <div class="comparador-circle">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <p>Comparador de capas.</p>
+          </span>
+        </div>
+      </div>
+    </div>
+    <script src="/mainLogic.js"></script>
+    <script src="/src/code/dataVisualization.js"></script>
   </body>
 </html>
