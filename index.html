@@ -58,7 +58,7 @@
       <button id="info-side" class="info-side">
         <i class='bx bx-play-circle'></i>
       </button>
- -->
+ -->    
       <button id="btn-location" class="info-side">
         <i class='bx bx-target-lock' ></i>
       </button>
@@ -325,47 +325,68 @@
       <div class="modal-content-info">
         <span class="close-info"><i class="bx bx-x"></i></span>
         <div class="info-container">
-          <span>
-            <i class="bx bx-vertical-center"></i>
-            <p>Comparador entre capas.</p>
-          </span>
+          
+          <div class="info-container-box">
+            <table>
+              <tr>
+                <th>Ícono</th>
+                <th>Función</th>
+              </tr>
+              
+                <td>
+                  <div class="zoom-container">
+                    <div><i class="bx bx-plus"></i></div>
+                    <div><i class="bx bx-minus"></i></div>
+                  </div>
+                </td>
+                <td>Controlador de zoom.</td>
+              </tr>
 
-          <span>
-            <i class="bx bx-crosshair"></i>
-            <p>Visualización regional.</p>
-          </span>
 
-          <span>
-            <i class="bx bx-info-circle"></i>
-            <p>Guia rápida de la plataforma.</p>
-          </span>
+              <tr>
+                <td><i class="bx bx-vertical-center"></i></td>
+                <td>Comparador entre capas.</td>
+              </tr>
+              <tr>
+                <td><i class="bx bx-crosshair"></i></td>
+                <td>Visualización regional.</td>
+              </tr>
 
-          <span>
-            <div class="zoom-container">
-              <div><i class="bx bx-plus"></i></div>
-              <div><i class="bx bx-minus"></i></div>
-            </div>
+              <tr>
+                <td><i class="bx bx-layer"></i></td>
+                <td>Alternar el tipo de mapa.</td>
+              </tr>
 
-            <p>Controlador de zoom.</p>
-          </span>
+              <tr>
+                <td><i class="bx bx-target-lock"></i></td>
+                <td>Muestra mi ubicación.</td>
+              </tr>
+              <tr>
+                <td><i class="bx bx-show"></i></td>
+                <td>Alterna la visibilidad de las capas.</td>
+              </tr>
 
-          <span class="span-seleccion-capa">
-            <img src="/src/assets/seleccioncapas.png" alt="seleccioncapas" />
-            <p>Seleccionador las capas a mostrar y comparar.</p>
-          </span>
+              <tr>
+                <td><i class="bx bx-info-circle"></i></td>
+                <td>Guía rápida de la plataforma.</td>
+              </tr>
+              <tr>
+            </table>
+          </div>
 
-          <span class="span-seleccion-capa">
-            <img src="/src/assets/image.png" alt="seleccionperiodo" />
-            <p>Seleccionador de período a mostrar.</p>
-          </span>
-          <span>
-            <div class="comparador-circle">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-            <p>Comparador de capas.</p>
-          </span>
+          <div class="info-container-box">
+            <span class="span-seleccion-capa">
+              <img src="/src/assets/seleccioncapas.png" alt="seleccioncapas" />
+              <p>Seleccionador las capas a mostrar y comparar.</p>
+            </span>
+  
+            <span class="span-seleccion-capa">
+              <img src="/src/assets/image.png" alt="seleccionperiodo" />
+              <p>Seleccionador de período a mostrar.</p>
+            </span>
+          </div>
+
+      
         </div>
       </div>
     </div>

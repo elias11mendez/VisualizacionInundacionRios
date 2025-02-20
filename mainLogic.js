@@ -21,8 +21,13 @@ let checkboxPermanent;
 let zonaRiosPermanent = null;
 let municipioPermanent = null;
 let map = L.map("map").setView([lat, long], initialZoom);
-let coords = L.CRS.EPSG3857
-let baseWMSUrl = "https://geoserver.computodistribuido.org/geoserver/zonarios/wms?=service";
+let coords = L.CRS.EPSG3857;
+let baseWMSUrl =
+  "https://geoserver.computodistribuido.org/geoserver/zonarios/wms?=service";
+
+/* let baseWMSUrl =
+  "https://localhost:8080/geoserver/zonarios/wms";
+ */
 
 L.control
   .scale({
@@ -38,7 +43,6 @@ const btnUbication = document.getElementById("btn-location");
 
 if ("geolocation" in navigator) {
   btnUbication.addEventListener("click", () => {
-
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const latitude = position.coords.latitude;
@@ -112,7 +116,6 @@ let isVisible = true;
 const btnLayerView = document.getElementById("btn-layerView");
 const iconoChange = document.getElementById("icono-change");
 
-
 // Función para alternar visibilidad de capas
 function toggleLayerVisibility(layers, visibility) {
   layers.forEach((layer) => {
@@ -141,7 +144,6 @@ btnLayerView.addEventListener("click", () => {
   toggleLayerVisibility(layers, newOpacity);
 
   if (iconoChange) iconoChange.className = newIconClass;
-
 });
 
 const optionMaps = document.querySelector(".map-layer-container");
@@ -394,7 +396,6 @@ function capasMunicipio(lat, long, baseWMSUrl) {
           municipioPermanent.remove();
         }
       }
-
     });
 
     checkboxAllLayer.checked = false;
@@ -407,7 +408,6 @@ function capasMunicipio(lat, long, baseWMSUrl) {
           map.removeLayer(layer);
         }
       });
-
 
       if (allLayersMunicipio.checked) {
         const capasMunicipios = [
@@ -439,7 +439,6 @@ function capasMunicipio(lat, long, baseWMSUrl) {
             })
             .addTo(map)
         );
-
       } else {
         allMunicipiosLayers.forEach((layer) => {
           if (map.hasLayer(layer)) {
@@ -448,7 +447,6 @@ function capasMunicipio(lat, long, baseWMSUrl) {
         });
 
         allMunicipiosLayers = [];
-
       }
     });
 
@@ -591,7 +589,13 @@ function capasMunicipio(lat, long, baseWMSUrl) {
         if (rightLayerPermanente) map.removeLayer(rightLayerPermanente);
         if (rightLayerTemporal) map.removeLayer(rightLayerTemporal);
 
-        if (municipioPermanent) map.removeLayer(municipioPermanent)
+        if (municipioPermanent) map.removeLayer(municipioPermanent);
+
+        allMunicipiosLayers.forEach((layer) => {
+          if (map.hasLayer(layer)) {
+            map.removeLayer(layer);
+          }
+        });
 
         if (sideBySideControl) {
           map.removeControl(sideBySideControl);
