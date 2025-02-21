@@ -491,7 +491,7 @@ function capasMunicipio(lat, long, baseWMSUrl) {
   });
 
   // Cargar el archivo GeoJSON y configurar el mapa
-  fetch("Tabasco.JSON")
+  fetch("Tabasco.json")
     .then((response) => {
       if (!response.ok) {
         throw new Error(
