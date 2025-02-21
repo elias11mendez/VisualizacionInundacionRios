@@ -234,7 +234,7 @@ function updateThirdChart() {
   const areasPermanente2021 = filteredPermanente2021.map((item) =>
     parseFloat(item.Area_km2)
   );
-/* 
+  /* 
   console.log("Areas Temporal 2021: ", areasPermanente2019);
 
   console.log("Areas Temporal 2020: ", areasPermanente2020);
@@ -782,7 +782,9 @@ function toggleUIElements() {
   ) {
     selectorContainer.style.display = "flex";
     histogramaArrow.style.display = "flex";
-    alert("CARGUE LAS CAPAS PARA INICIAR LA COMPARACIÓN Y VER LAS GRÁFICAS");
+    alert(
+      "Por favor, cargue las capas para iniciar la comparación y visualizar las gráficas."
+    );
   } else {
     selectorContainer.style.display = "none";
     histogramaArrow.style.display = "flex";
@@ -806,7 +808,6 @@ let histogramaZonaRios = null;
 window.addEventListener("estoenviaelcambiodelmunicipio", function (event) {
   areaSeleccionada = event.detail;
 
-
   document.getElementById("zona-selected").innerHTML = areaName;
   document.getElementById(
     "label-selected-area"
@@ -828,8 +829,6 @@ function actualizarGrafica(municipio) {
       const kmMunicipio = municipioData.km;
       const kmAffected = municipioData.Durante;
 
-     
-
       let porcentajeAffected = (kmAffected / kmMunicipio) * 100;
 
       document.getElementById(
@@ -838,8 +837,6 @@ function actualizarGrafica(municipio) {
       document.getElementById(
         "label-selected-area-affected"
       ).innerHTML = `${porcentajeAffected.toFixed(1)}%`;
-
-     
 
       if (!municipioData) {
         console.warn(`Datos no encontrados para el municipio: ${municipio}`);

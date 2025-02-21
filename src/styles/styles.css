@@ -10,7 +10,6 @@
 
 :root {
   font-family: "Montserrat";
-
   --color-primario: #203c6c;
   --color-secundario: #ddeeed;
   --color-terciario: #3a8b86;
@@ -258,6 +257,7 @@
   align-items: center;
   color: var(--color-secundario);
   background-color: var(--color-primario);
+  border-radius: var(--radiusUno);
 }
 
 .layer-selector {
@@ -397,46 +397,35 @@
 .loader-container-left {
   display: block;
   position: absolute;
-  top: 1%;
+  top: 0%;
   left: 50%;
   transform: translate(-50%, 400%) perspective(200px);
   z-index: 1;
   width: 48px;
   height: 48px;
-  position: absolute;
   text-align: center;
   align-items: center;
   justify-content: center;
   pointer-events: none;
-}
-
-.loader-left {
-  display: flex;
-  position: relative;
-  width: 48px;
-  height: 48px;
-  background: #2c68d6;
-  transform: rotateX(65deg) rotate(45deg);
-  color: #2c68d657;
-  animation: layerr 1s linear infinite alternate;
 }
 
 .loader-container-right {
+  display: block;
   position: absolute;
-  top: 40%;
+  top: 0%;
   left: 50%;
-  transform: translate(-50%, 400%) perspective(200px);
+  transform: translate(-50%, 900%) perspective(200px);
   z-index: 1;
   width: 48px;
   height: 48px;
-  position: absolute;
   text-align: center;
   align-items: center;
   justify-content: center;
   pointer-events: none;
 }
 
-.loader-right {
+.loader-right,
+.loader-left {
   display: flex;
   position: relative;
   width: 48px;
@@ -629,7 +618,7 @@ input[type="checkbox"] {
   top: 40%;
   left: 10%;
   width: 300px;
-  height: 200px;
+  height: 100px;
   background-color: transparent;
   z-index: 1;
   color: #888;
@@ -668,7 +657,7 @@ input[type="checkbox"] {
   background-color: white;
   padding: 20px;
   border: 1px solid #888;
-  width:50%;
+  width: 50%;
   max-width: 60%;
   max-height: 100%;
   text-align: center;
@@ -747,6 +736,7 @@ i {
 .span-seleccion-capa img {
   width: 120%;
   height: auto;
+  border-radius: var(--radiusUno);
 }
 .comparador-circle {
   width: 40px;

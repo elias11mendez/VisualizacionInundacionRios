@@ -1,37 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Visualizacion Rios - Cuerpo academico computo distribuido</title>
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="/src/code/leaflet-side-by-side.js"></script>
-    <link rel="stylesheet" href="/src/styles/styles.css" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link
-      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
-      rel="stylesheet"
-    />
+  <meta name="description" content="Sistema de mapeo de inundaciones en Tabasco 2020. Visualiza datos, mapas y análisis en tiempo real sobre las áreas afectadas." />
+  <meta name="keywords" content="mapa de inundaciones, Tabasco 2020, análisis de inundaciones, SIG, imágenes satelitales, Sentinel-1, Google Earth Engine, gestión de desastres, monitoreo ambiental" />
+  <meta name="author" content="Cuerpo Académico Cómputo Distribuido" />
+
+  <!-- Open Graph para redes sociales -->
+  <meta property="og:title" content="Visualizador de Inundaciones - CA Cómputo Distribuido" />
+  <meta property="og:description" content="Explora mapas de inundaciones en Tabasco 2020 con datos en tiempo real y análisis detallado." />
+  <meta property="og:image" content="https://computodistribuido.org/inundaciones/src/assets/academicos.ico" />
+  <meta property="og:url" content="https://computodistribuido.org/inundaciones" />
+  <meta property="og:type" content="website" />
+
+  <title>Visualizador de Inundaciones | CA Cómputo Distribuido</title>
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="/src/styles/styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/src/code/leaflet-side-by-side.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
-  <link rel="icon" href="/src/assets/academicos.ico" type="image/x-icon" />
+  <link rel="icon" sizes="180x180" href="/src/assets/logo.ico" type="image/x-icon" />
   <body>
     <nav class="nav">
       <div class="nav-logos">
-        <img src="/src/assets/academicos.ico" alt="logo-academicos" />
+<a href="https://computodistribuido.org/" target="_blank"><img src="/src/assets/academicos.ico" alt="logo-academicos"/></a>
         <img
           src="https://sic.cultura.gob.mx/imagenes_cache/universidad_1874_g_10230.png"
           alt="logo-itsr"
         />
-        <img src="/src/assets/logo-tecnm.png" alt="logo-tecnm" />
+        <img src="src/assets/logo-tecnm.webp" alt="logo-tecnm" />
       </div>
 
       <div class="nav-title">
@@ -74,7 +78,7 @@
       <div>
         <img
           id="btn-layer-satelite"
-          src="/src/assets/img-satelite.webp"
+          src="/src/assets/satelite-map.webp"
           alt="img-satelite"
         />
         <label>Satélite</label>
@@ -82,7 +86,7 @@
       <div>
         <img
           id="btn-layer-openstreetmap"
-          src="/src/assets/a.png"
+          src="/src/assets/openstreet-map.webp"
           alt="img-openstreetmap"
         />
         <label>OpenStreetMap</label>
@@ -91,7 +95,7 @@
       <div>
         <img
           id="btn-layer-cartoblack"
-          src="/src/assets/map-cartoblack.png"
+          src="/src/assets/cartoblack-map.webp"
           alt="img-cartodbblack"
         />
         <label>CartoBlack</label>
@@ -224,13 +228,14 @@
               height="400"
             ></canvas>
 
+            <div class="loader-container-left">
+              <span id="loader" class="loader-left"></span>
+            </div>
+
             <div class="loader-container-right">
               <span id="loader" class="loader-right"></span>
             </div>
-
-            <div class="loader-container-left">
-              <span class="loader-left"></span>
-            </div>
+          
             <canvas
               id="histogramaRightTemporal"
               width="400"
@@ -376,13 +381,14 @@
 
           <div class="info-container-box">
             <span class="span-seleccion-capa">
-              <img src="/src/assets/seleccioncapas.png" alt="seleccioncapas" />
-              <p>Seleccionador las capas a mostrar y comparar.</p>
+              <img src="/src/assets/seleccion-capas.webp" alt="seleccioncapas" />
+              <p>Seleccionador de período a mostrar.</p>
+
             </span>
   
             <span class="span-seleccion-capa">
-              <img src="/src/assets/image.png" alt="seleccionperiodo" />
-              <p>Seleccionador de período a mostrar.</p>
+              <img src="/src/assets/seleccion-comparacion.webp" alt="seleccionperiodo" />
+              <p>Seleccionador las capas a mostrar y comparar.</p>
             </span>
           </div>
 

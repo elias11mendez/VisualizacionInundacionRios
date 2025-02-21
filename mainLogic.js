@@ -26,7 +26,7 @@ let baseWMSUrl =
   "https://geoserver.computodistribuido.org/geoserver/zonarios/wms?=service";
 
 /* let baseWMSUrl =
-  "https://localhost:8080/geoserver/zonarios/wms";
+  "http://localhost:8080/geoserver/zonarios/wms?=service";
  */
 
 L.control
