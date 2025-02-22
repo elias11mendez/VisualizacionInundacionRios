@@ -1102,7 +1102,7 @@ actualizarGrafica("Zona Rios");
 
 //---------------------------------Controlador de modal informacio -----------------------
 
-const btnInfo = document.getElementById("info-side");
+const btnInfo = document.getElementById("btn-guia");
 const modalInfo = document.getElementById("modal-info");
 const closeBtn = document.querySelector(".close");
 const closeInfo = document.querySelector(".close-info");

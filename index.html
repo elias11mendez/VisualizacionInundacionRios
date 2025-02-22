@@ -30,9 +30,12 @@
   <body>
     <nav class="nav">
       <div class="nav-logos">
-<a href="https://computodistribuido.org/" target="_blank"><img src="/src/assets/academicos.ico" alt="logo-academicos"/></a>
+        <a href="https://computodistribuido.org/" target="_blank" aria-label="Ir al sitio web de Cómputo Distribuido">
+          <img src="/src/assets/academicos.ico" alt="Logo de Cómputo Distribuido" title="Cómputo Distribuido" />
+        </a>
+        
         <img
-          src="https://sic.cultura.gob.mx/imagenes_cache/universidad_1874_g_10230.png"
+          src="/src/assets/logo-tecnmrios.webp"
           alt="logo-itsr"
         />
         <img src="src/assets/logo-tecnm.webp" alt="logo-tecnm" />
@@ -47,29 +50,26 @@
 
     <div class="btn-container">
       
-      <button class="btn-side" id="activateSide">
-        <i class="bx bx-vertical-center" style="rotate: 90deg"></i>
+      <button class="btn-comparador" id="activateSide" aria-label="Activar comparador">
+        <i class="bx bx-vertical-center" style="rotate: 90deg" aria-hidden="true"></i>
       </button>
-
-      <button id="btn-endClean" class="btn-endClean">
-        <i class="bx bx-crosshair"></i>
+      
+      <button id="btn-endClean" class="btn-inicio" aria-label="Reiniciar mapa">
+        <i class="bx bx-crosshair" aria-hidden="true"></i>
       </button>
-
-      <button id="btn-option-maps" class="btn-layer">
-        <i class="bx bx-layer"></i>
+      
+      <button id="btn-option-maps" class="btn-mapa" aria-label="Seleccionar mapas adicionales">
+        <i class="bx bx-layer" aria-hidden="true"></i>
       </button>
-<!-- 
-      <button id="info-side" class="info-side">
-        <i class='bx bx-play-circle'></i>
+      
+      <button id="btn-location" class="btn-ubicacion" aria-label="Activar ubicación">
+        <i class="bx bx-target-lock" aria-hidden="true"></i>
       </button>
- -->    
-      <button id="btn-location" class="info-side">
-        <i class='bx bx-target-lock' ></i>
+      
+      <button id="btn-guia" class="btn-guia" aria-label="Ver guía de botones">
+        <i class="bx bx-info-circle" aria-hidden="true"></i>
       </button>
-
-      <button id="info-side" class="info-side">
-        <i class="bx bx-info-circle"></i>
-      </button>
+      
 
     </div>
   </div>
@@ -81,7 +81,7 @@
           src="/src/assets/satelite-map.webp"
           alt="img-satelite"
         />
-        <label>Satélite</label>
+        <span>Satélite</span>
       </div>
       <div>
         <img
@@ -89,7 +89,7 @@
           src="/src/assets/openstreet-map.webp"
           alt="img-openstreetmap"
         />
-        <label>OpenStreetMap</label>
+        <span>OpenStreetMap</span>
       </div>
 
       <div>
@@ -98,7 +98,7 @@
           src="/src/assets/cartoblack-map.webp"
           alt="img-cartodbblack"
         />
-        <label>CartoBlack</label>
+        <span>CartoBlack</span>
       </div>
     </div>
 
@@ -113,14 +113,15 @@
           <!-- CAPA IZQUIERDA Checkbox -->
 
           <div>
-            <label>Agua Permanente </label>
+            <label for="leftPermanentCheckbox">Agua Permanente </label>
             <input
               type="checkbox"
               id="leftPermanentCheckbox"
-              6
               name="leftPermanentCheckbox"
               value="leftPermanentCheckbox"
               disabled
+              aria-disabled="true"
+              aria-describedby="leftPermanentInfo"
             />
           </div>
         </div>
@@ -132,13 +133,15 @@
           </div> -->
           <!-- Capa derecha checkbox -->
           <div>
-            <label>Agua Permanente </label>
+            <label for="rightPermanentCheckbox">Agua Permanente </label>
             <input
               type="checkbox"
               id="rightPermanentCheckbox"
               name="rightPermanentCheckbox"
               value="rightPermanentCheckbox"
               disabled
+              aria-disabled="true"
+              aria-describedby="rightPermanentInfo"
             />
           </div>
         </div>
@@ -289,34 +292,37 @@
     <div class="select-inicio">
       <div class="checkbox-permanent">
         <div>
-          <label>Agua Permanente </label>
-          <input type="checkbox" id="Checkbox-Permanent" />
+          <label for="Checkbox-Permanent">Agua Permanente </label>
+          <input type="checkbox" id="Checkbox-Permanent" name="PermanentWater" 
+          aria-label="Activar o desactivar agua permanente"/>
         </div>
 
         <div>
-          <label>Todas las capas</label>
-          <input type="checkbox" id="Checkbox-all" />
+          <label for="Checkbox-all">Todas las capas</label>
+          <input type="checkbox" id="Checkbox-all"  name="all-layer" 
+          aria-label="Seleccionar o deseleccionar todas las capas"/>
         </div>
         <div>
-          <button id="btn-layerView">
-            <i id="icono-change" class="bx bx-show"></i>
+          <button id="btn-layerView" aria-label="Mostrar u ocultar capas en el mapa">
+            <i id="icono-change" class="bx bx-show" aria-hidden="true"></i>
           </button>
         </div>
       </div>
 
       <div class="select-inicio-selected">
-        <label for="">Periodo de capa: </label>
+        <label for="SelectPeriodo">Periodo de capa: </label>
         <select class="custom-select-inicio" id="SelectPeriodo">
           <option value="" disabled selected>Permanente</option>
           <option value="Antes">Antes</option>
           <option value="Durante">Durante</option>
           <option value="Despues">Despues</option>
         </select>
-
+        
         <div class="zona-selected">
-          <label for="">Zona seleccionada: </label>
-          <span id="zona-selected-down"> Zona Ríos</span>
+          <span id="zona-label">Zona seleccionada:</span>
+          <p id="zona-selected-down" aria-labelledby="zona-label" aria-live="polite">Zona Ríos</p>
         </div>
+        
       </div>
     </div>
     <!--------------------------ETIQUETA DE LAS EL AREA SELECIONADA----------------------------->

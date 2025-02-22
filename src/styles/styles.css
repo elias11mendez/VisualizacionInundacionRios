@@ -54,14 +54,17 @@
   background-color: #ffffff;
   border-radius: var(--radiusUno);
 }
-
+.nav-logos a{
+  display: flex;
+  align-items: center;
+}
 .nav h1 {
   margin: 0;
   color: var(--color-secundario);
 }
 
 .nav img {
-  max-height: 32px;
+  max-height: 2rem;
   object-fit: contain;
   border-radius: 100px;
 }
@@ -83,10 +86,11 @@
 }
 
 /*----------------------------------------- Estilos generales para los botones ----------------------*/
-.btn-side,
-.btn-endClean,
-.info-side,
-.btn-layer {
+.btn-comparador,
+.btn-inicio,
+.btn-ubicacion,
+.btn-mapa,
+.btn-guia{
   width: 40px;
   height: 40px;
   display: flex;
@@ -101,24 +105,22 @@
   cursor: pointer;
   border-radius: var(--radiusUno);
 }
-.btn-layer:hover i,
-.btn-endClean:hover i,
-.btn-side:hover i,
-.info-side:hover i {
+.btn-mapa:hover i,
+.btn-inicio:hover i,
+.btn-comparador:hover i,
+.btn-ubicacion:hover i,
+.btn-guia:hover i{
   color: var(--color-primario);
 }
-.btn-side:hover,
-.btn-endClean:hover,
-.info-side:hover,
-.btn-layer:hover {
+.btn-comparador:hover,
+.btn-inicio:hover,
+.btn-ubicacion:hover,
+.btn-mapa:hover,
+.btn-guia:hover {
   background-color: var(--color-secundario);
 }
 
-.btn-side i,
-.btn-endClean i,
-.info-side i {
-  font-size: 20px;
-}
+
 
 .leaflet-control-layers {
   right: 10px;
@@ -174,7 +176,7 @@
   border-radius: 15px;
   cursor: pointer;
 }
-.map-layer-container label {
+.map-layer-container span{
   color: #cacaca;
   font-size: 13px;
 }
@@ -550,7 +552,10 @@
   align-items: center;
 }
 .zona-selected {
-  width: 256px;
+  display:flex;
+  align-items: center;
+  gap: 10px;
+  width: 264px;
 }
 .checkbox-permanent button {
   border: none;
@@ -885,7 +890,10 @@ canvas {
     font-size: 18px;
     text-align: center;
   }
-
+  h1 {
+    padding: 1rem;
+    font-size: 1rem;
+  }
   .selector-container {
     flex-direction: column;
     width: 90%;
@@ -915,7 +923,7 @@ canvas {
     flex-wrap: wrap;
   }
   .legend-comparadora {
-    display: flex;
+    display: none;
     justify-content: space-between;
     width: 220px;
     flex-wrap: wrap;
@@ -992,14 +1000,14 @@ canvas {
     align-items: center;
   }
 
-  .select-inicio-selected label {
+  .select-inicio-selected span{
     display: none;
   }
   .label-selected-area-container {
     display: flex;
     position: absolute;
     flex-direction: column;
-    top: 75%;
+    top: 70%;
     left: 50%;
     width: 200px;
     height: 0;
@@ -1092,10 +1100,10 @@ canvas {
     box-sizing: border-box;
   }
 
-  .btn-side,
-  .btn-endClean,
-  .info-side,
-  .btn-layer {
+  .btn-comparador,
+  .btn-inicio,
+  .btn-ubicacion,
+  .btn-mapa {
     font-size: 20px;
     padding: 7px;
     margin: 5px 0;
