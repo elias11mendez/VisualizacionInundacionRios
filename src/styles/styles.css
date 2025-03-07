@@ -10,8 +10,8 @@
 
 :root {
   font-family: "Montserrat";
-  --color-primario: #051430;
-  --color-secundario: #ddeeed;
+  --color-primario: #203c6c;
+  --color-secundario: #e6eedd;
   --color-terciario: #3a8b86;
   --sizePc: 14px;
   --radiusUno: 10px;
@@ -626,7 +626,7 @@ input[type="checkbox"] {
   height: 100px;
   background-color: transparent;
   z-index: 1;
-  color: #888;
+  color: #dfdede;
 }
 .label-selected-area-container span {
   display: flex;
