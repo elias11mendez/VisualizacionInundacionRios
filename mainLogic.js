@@ -22,12 +22,10 @@ let zonaRiosPermanent = null;
 let municipioPermanent = null;
 let map = L.map("map").setView([lat, long], initialZoom);
 let coords = L.CRS.EPSG3857;
-let baseWMSUrl =
-  "https://geoserver.computodistribuido.org/geoserver/zonarios/wms?=service";
-
 /* let baseWMSUrl =
-  "http://localhost:8080/geoserver/zonarios/wms?=service";
+  "https://geoserver.computodistribuido.org/geoserver/zonarios/wms?=service";
  */
+let baseWMSUrl = "http://localhost:8080/geoserver/zonarios/wms?=service";
 
 L.control
   .scale({
@@ -208,7 +206,7 @@ btnLayerOpenstreet.addEventListener("click", () => {
 });
 
 btnLayerCartoblack.addEventListener("click", () => {
-  setActiveLayer("cartoBlack", "#888");
+  setActiveLayer("cartoBlack", "#dfdede");
 });
 
 let capasActivas = false; // Inicia en falso para evitar problemas si lo pongo en true deja de funcionar
